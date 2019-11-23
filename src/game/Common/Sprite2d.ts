@@ -75,21 +75,21 @@ class Batch2dPlugin extends AbstractBatchRenderer {
             float32View,
         } = attributeBuffer
 
-        const p = aIndex / this.vertexSize; // float32View.length / 6 / 2
+        const packedVertices = aIndex / this.vertexSize
         const uvs = element.uvs
-        const indicies = element.indices; // geometry.getIndex().data;// indicies
+        const indicies = element.indices
         const vertexData = element.vertexData
         const vertexData2d = element.vertexData2d
-        const textureId = element._texture.baseTexture._id
+        const textureId = element._texture.baseTexture._batchLocation
 
         const alpha = Math.min(element.worldAlpha, 1.0)
-
-        const argb = alpha < 1.0 && element._texture.baseTexture.premultiplyAlpha ? utils.premultiplyTint(element._tintRGB, alpha)
+        const argb = (alpha < 1.0
+            && element._texture.baseTexture.alphaMode)
+            ? utils.premultiplyTint(element._tintRGB, alpha)
             : element._tintRGB + (alpha * 255 << 24)
 
         if (vertexData2d) {
-            let j = 0
-            for (let i = 0; i < vertexData2d.length; i += 3, j += 2) {
+            for (let i = 0, j = 0; i < vertexData2d.length; i += 3, j += 2) {
                 float32View[aIndex++] = vertexData2d[i]
                 float32View[aIndex++] = vertexData2d[i + 1]
                 float32View[aIndex++] = vertexData2d[i + 2]
@@ -112,7 +112,7 @@ class Batch2dPlugin extends AbstractBatchRenderer {
 
         // tslint:disable-next-line: prefer-for-of
         for (let i = 0; i < indicies.length; i++) {
-            indexBuffer[iIndex++] = p + indicies[i]
+            indexBuffer[iIndex++] = packedVertices + indicies[i]
         }
     }
 }

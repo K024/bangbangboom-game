@@ -9,7 +9,7 @@ module.exports = merge(common, {
 
     output: {
         filename: 'js/[name].[hash:8].js',
-        path: path.join(__dirname, '../docs/')
+        path: path.join(__dirname, '../build/')
     },
 
     // devtool: 'source-map',

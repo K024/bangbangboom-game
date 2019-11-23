@@ -1,12 +1,12 @@
 {
   "name": "bangbangboom-game",
   "license": "MIT",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "./lib/bangbangboom-game.js",
   "scripts": {
     "start": "webpack-dev-server --config ./webpackconfig/webpack.dev.js --host 0.0.0.0",
     "build": "webpack --config ./webpackconfig/webpack.prod.js",
-    "buildlib": "webpack --config ./webpackconfig/webpack.lib.js"
+    "build-lib": "webpack --config ./webpackconfig/webpack.lib.js"
   },
   "devDependencies": {
     "@types/howler": "^2.1.1",
@@ -14,7 +14,6 @@
     "awesome-typescript-loader": "^5.2.1",
     "copy-webpack-plugin": "^5.0.3",
     "html-webpack-plugin": "^3.2.0",
-    "pixi.js": "^5.1.3",
     "source-map-loader": "^0.2.4",
     "tslint": "^5.20.0",
     "typescript": "^3.4.5",
@@ -26,6 +25,7 @@
   "dependencies": {
     "howler": "^2.1.2",
     "inversify": "^5.0.1",
+    "pixi.js": "^5.2.0",
     "reflect-metadata": "^0.1.13"
   },
   "types": "./types/index.d.ts",

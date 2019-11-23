@@ -2,8 +2,8 @@
 var path = require('path');
 
 module.exports = {
-    mode: "development",
-    // mode: "production",
+    // mode: "development",
+    mode: "production",
 
     entry: {
         main: path.join(__dirname, '../src/index.ts')
@@ -17,7 +17,7 @@ module.exports = {
         umdNamedDefine: true
     },
 
-    devtool: "source-map",
+    // devtool: "source-map",
 
     module: {
         rules: [{
@@ -36,12 +36,4 @@ module.exports = {
             '.ts', '.js', '.tsx', '.jsx'
         ]
     },
-    externals: {
-        'pixi.js': {
-            root: "PIXI",
-            commonjs: 'pixi.js',
-            commonjs2: 'pixi.js',
-            amd: 'pixi.js',
-        }
-    }
 }

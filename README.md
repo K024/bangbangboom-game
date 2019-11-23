@@ -5,8 +5,6 @@ game part for [bangbangboom](https://bangbangboom.ml)
 ## Usage
 umd
 ```html
-<!-- Need external PIXI -->
-<script src="https://cdn.bootcss.com/pixi.js/5.1.3/pixi.min.js"></script>
 <script src="./bangbangboom-game.js"></script>
 <script>
   let GameConfig = {
