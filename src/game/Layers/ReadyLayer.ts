@@ -1,12 +1,11 @@
-import { FixRatioContainer } from "../Common/FixRatioContainer";
-import { InfoSprite } from "../Common/InfoSprite";
-import { PositionInfo, SpriteInfo, setPositionInfo } from "../Common/InfoType";
-import { TextStyle, Text, Graphics } from "pixi.js";
-import { injectable } from "inversify";
-import { LayerWidth, LayerHeight } from "../Core/Constants";
-import { Resources, GlobalEvents } from "../Utils/SymbolClasses";
-import { Container as IOC } from "inversify"
-import { GameLoadConfig, GameConfig } from "../Core/GameConfig";
+import { FixRatioContainer } from "../Common/FixRatioContainer"
+import { InfoSprite } from "../Common/InfoSprite"
+import { PositionInfo, SpriteInfo, setPositionInfo } from "../Common/InfoType"
+import { TextStyle, Text, } from "pixi.js"
+import { injectable } from "inversify"
+import { LayerWidth, LayerHeight } from "../Core/Constants"
+import { Resources, GlobalEvents } from "../Utils/SymbolClasses"
+import { GameLoadConfig } from "../Core/GameConfig"
 
 type ReadyLayerInfo = {
     play: SpriteInfo,
@@ -24,8 +23,8 @@ export class ReadyLayer extends FixRatioContainer {
         super(LayerWidth, LayerHeight)
 
         this.resize(...events.Resize.prevArgs)
-        events.Resize.add((w, h) => {
-            if (!this.parent) return "remove"
+        events.Resize.add((remove, w, h) => {
+            if (!this.parent) return remove()
             this.resize(w, h)
         })
 
@@ -56,8 +55,8 @@ export class ReadyLayer extends FixRatioContainer {
         playbtn.once("pointertap", () => this.start())
         autobtn.once("pointertap", () => this.start(true))
 
-        events.Update.add(dt => {
-            if (!this.parent) return "remove"
+        events.Update.add((remove, dt) => {
+            if (!this.parent) return remove()
             this.children.forEach(x => {
                 if (x instanceof InfoSprite) {
                     x.update(dt)
@@ -66,6 +65,7 @@ export class ReadyLayer extends FixRatioContainer {
         })
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     start = (auto = false) => { /** */ }
 }
 

@@ -1,9 +1,9 @@
-import { Container } from "pixi.js";
+import { Container } from "pixi.js"
 
 
 export class FixRatioContainer extends Container {
     constructor(initWidth: number, initHeight: number) {
-        super();
+        super()
         this._width = initWidth
         this._height = initHeight
     }
@@ -13,12 +13,12 @@ export class FixRatioContainer extends Container {
 
     get width() { return this._width * this.scale.x }
     set width(v) {
-        const p = v / this._width;
+        const p = v / this._width
         this.scale.set(p, p)
     }
     get height() { return this._height * this.scale.x }
     set height(v) {
-        const p = v / this._height;
+        const p = v / this._height
         this.scale.set(p, p)
     }
 

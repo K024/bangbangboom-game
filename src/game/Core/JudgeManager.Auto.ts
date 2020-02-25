@@ -1,6 +1,6 @@
-import { injectable } from "inversify";
-import { AbsctractJudgeManager } from "./JudgeManager";
-import { GameState } from "./GameState";
+import { injectable } from "inversify"
+import { AbsctractJudgeManager } from "./JudgeManager"
+import { GameState } from "./GameState"
 
 @injectable()
 export class AutoJudgeManager extends AbsctractJudgeManager {
@@ -11,14 +11,16 @@ export class AutoJudgeManager extends AbsctractJudgeManager {
 
         const list = state.map.notes
 
-        const interval = setInterval(() => {
-            if (state.paused) return
-            if (state.ended) {
-                clearInterval(interval)
-            }
+        let timeoutOffset = 0
 
-            const time = state.GetMusicTime()
+        const animloop = () => {
+            if (state.ended) return
+            requestAnimationFrame(animloop)
+            if (state.paused) return
+
+            const time = state.GetMusicTime() + 0.05
             let i = nextJudgeIndex
+
             while (i < list.length && list[i].time < time) {
                 const note = list[i]
                 note.judge = "perfect"
@@ -26,15 +28,21 @@ export class AutoJudgeManager extends AbsctractJudgeManager {
                     note.parent.pointerId = 1
                     note.parent.nextJudgeIndex = 1
                 } else if (note.type === "slideamong") {
-                    note.parent.nextJudgeIndex++
+                    note.parent.nextJudgeIndex!++
                 } else if (note.type === "slideend" || note.type === "flickend") {
                     note.parent.pointerId = 0
                 }
-                state.onJudge.emit(note)
+                setTimeout(() => {
+                    state.onJudge.emit(note)
+                    const offset = state.GetMusicTime() - list[i].time
+                    timeoutOffset = timeoutOffset * 0.9 + offset * 0.01
+                }, time - list[i].time - timeoutOffset)
                 i++
             }
             nextJudgeIndex = i
-        })
+        }
+
+        requestAnimationFrame(animloop)
     }
 }
 

@@ -1,40 +1,31 @@
+import { setItems } from "../../core/Utils"
 
+
+type Listener<Args extends any[]> = (remove: () => void, ...args: Args) => any
 
 export class GameEvent<Args extends any[]> {
 
-    private listeners: Array<(...args: Args) => any> = []
-    private clearFlag = false
+    private listeners = new Set<Listener<Args>>()
     prevArgs: Args = null as any as Args
 
     emit(...args: Args) {
-        this.clearFlag = false
-        let list = this.listeners.splice(0)
-        this.listeners.length = 0
-        list = list.filter(l => {
-            try {
-                return l(...args) !== "remove"
-            } catch (error) {
-                console.error(error)
-                return false
-            }
-        })
-        this.listeners = this.listeners.concat(list)
-        if (this.clearFlag) this.listeners.length = 0
+        const list = setItems(this.listeners)
+        for (const listener of list) {
+            listener(() => this.listeners.delete(listener), ...args)
+        }
         this.prevArgs = args
     }
 
     /** a listener returns "remove" to remove itself from this event */
-    add(listener: (...args: Args) => any) {
-        this.listeners.push(listener)
+    add(listener: Listener<Args>) {
+        this.listeners.add(listener)
     }
-    remove(listener: (...args: Args) => void) {
-        const index = this.listeners.indexOf(listener)
-        if (index >= 0) this.listeners = this.listeners.splice(index, 1)
+    remove(listener: Listener<Args>) {
+        return this.listeners.delete(listener)
     }
 
     clear() {
-        this.listeners.length = 0
-        this.clearFlag = true
+        this.listeners.clear()
     }
 }
 

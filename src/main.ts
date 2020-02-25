@@ -14,8 +14,7 @@ div.appendChild(canvas)
 
 // tslint:disable-next-line: no-unused-expression
 // new TestApp(canvas)
-new Game(canvas, {}, {
-    mapSrc: "/assets/10001.txt",
+new Game(canvas, { debug: true }, {
     musicSrc: "/assets/10001.mp3",
     backgroundSrc: "/assets/10001.jpg",
     skin: "/assets/default",
@@ -23,5 +22,4 @@ new Game(canvas, {}, {
     loadingMessages: ["Message1", "Message2"]
 }).start()
 
-
-document.getElementById("loader").style.display = "none"
+    ; (document.getElementById("loader") as HTMLDivElement).style.display = "none"

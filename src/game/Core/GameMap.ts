@@ -1,5 +1,4 @@
-
-import * as Core from '../../core/MapCore'
+import * as RawMap from "../../core/Map"
 import { findex } from '../../core/Utils'
 import { Judge } from './Constants'
 
@@ -79,99 +78,67 @@ export type GameMap = {
     combo: number
 }
 
-export function FromMapCore(map: Core.GameMap): GameMap {
-    const notes: Note[] = []
-    const bars: SlideBar[] = []
-    let combo = 0
-    for (const tp of map.timepoints) {
-        const dt = 60 / tp.bpm / 24
-        const off = tp.offset
-        const realtime = (time: number) => off + dt * time
-        for (const n of tp.notes) {
-            switch (n.type) {
-                case "single":
-                    notes.push({ type: "single", time: realtime(n.time), lane: n.lane, onbeat: n.time % 24 === 0 })
-                    combo++
-                    break
-                case "flick":
-                    notes.push({ type: "flick", time: realtime(n.time), lane: n.lane })
-                    combo++
-                    break
-                case "slide":
-                    const slide: Slide = {
-                        type: "slide", flickend: n.flickend,
-                        notes: []
-                    }
-                    notes.push({
-                        type: "slidestart", parent: slide,
-                        time: realtime(n.notes[0].time), lane: n.notes[0].lane,
-                    })
-                    slide.notes.push(findex(notes, -1) as SlideStart)
-                    combo++
-                    for (let i = 1; i < n.notes.length - 1; i++) {
-                        notes.push({
-                            type: "slideamong", parent: slide,
-                            time: realtime(n.notes[i].time), lane: n.notes[i].lane
-                        })
-                        slide.notes.push(findex(notes, -1) as SlideAmong)
-                        bars.push({
-                            type: "slidebar",
-                            start: findex(notes, -2) as SlideStart, end: findex(notes, -1) as SlideAmong
-                        })
-                        combo++
-                    }
-                    const end = findex(n.notes, -1)
-                    notes.push({
-                        type: n.flickend ? "flickend" : "slideend", parent: slide,
-                        time: realtime(end.time), lane: end.lane
-                    } as SlideFlickEnd)
-                    slide.notes.push(findex(notes, -1) as SlideEnd)
-                    bars.push({
-                        type: "slidebar",
-                        start: findex(notes, -2) as SlideAmong, end: findex(notes, -1) as SlideEnd
-                    })
-                    combo++
-                    if (n.notes.length === 2 && n.notes[0].lane === n.notes[1].lane)
-                        slide.long = true
-            }
-        }
-    }
-    notes.sort((a, b) => {
+export function fromRawMap(map: RawMap.RawMap): GameMap {
+    map.notes = map.notes.sort((a, b) => {
         const dt = a.time - b.time
         if (dt) return dt
         return a.lane - b.lane
     })
-    bars.sort((a, b) => {
-        const dt = a.start.time - b.start.time
-        if (dt) return dt
-        return a.start.lane - b.start.lane
-    })
-
-    const timemap = new Map<number, MainNote>()
+    const slideset = new Map<number, Slide>()
+    const slidenotes = new Map<number, RawMap.NoteType[]>()
+    for (const s of map.slides) {
+        slideset.set(s.id, {
+            type: "slide", flickend: s.flickend, notes: []
+        })
+    }
+    for (const n of map.notes) {
+        if (n.type === "slide") {
+            const list = slidenotes.get(n.slideid)
+            if (!list) slidenotes.set(n.slideid, [n])
+            else list.push(n)
+        }
+    }
+    const notes: Note[] = []
     const simlines: SimLine[] = []
-    for (const n of notes) {
-        switch (n.type) {
-            case "single": case "flick": case "slidestart": case "slideend": case "flickend":
-                const s = timemap.get(n.time)
-                if (s) {
-                    simlines.push({ type: "simline", left: s, right: n })
+    const bars: SlideBar[] = []
+    const timeMap = new Map<number, Note>()
+    for (const n of map.notes) {
+        if (n.type !== "slide") {
+            notes.push({ ...n })
+        } else {
+            const s = slideset.get(n.slideid)
+            if (!s) throw new Error("Can not find slide for note")
+            const l = slidenotes.get(n.slideid)
+            if (!l) throw new Error("Never happens")
+            if (l.length < 2) throw new Error("Slide can not have less than 2 notes")
+            if (n === l[0]) {
+                notes.push({ type: "slidestart", parent: s, time: n.time, lane: n.lane })
+                const start = findex(notes, -1) as SlideStart
+                s.notes.push(start)
+            } else {
+                if (n === l[l.length - 1]) {
+                    if (s.flickend)
+                        notes.push({ type: "flickend", parent: s, time: n.time, lane: n.lane })
+                    else
+                        notes.push({ type: "slideend", parent: s, time: n.time, lane: n.lane })
                 }
-                timemap.set(n.time, n)
+                else
+                    notes.push({ type: "slideamong", parent: s, time: n.time, lane: n.time })
+                const start = findex(s.notes, -1) as SlideStart
+                const end = findex(notes, -1) as SlideAmong
+                s.notes.push(end)
+                bars.push({ type: "slidebar", start, end })
+            }
+        }
+        const right = findex(notes, -1)!
+        if (right.type !== "slideamong") {
+            const left = timeMap.get(n.time)
+            if (left) {
+                simlines.push({ type: "simline", left, right })
+            }
+            timeMap.set(n.time, right)
         }
     }
 
-    simlines.sort((a, b) => {
-        return a.left.time - b.left.time
-    })
-
-    return { notes, combo, bars, simlines }
+    return { notes, bars, simlines, combo: notes.length }
 }
-
-export function FromString(str: string, mirror = false) {
-    const map = FromMapCore(Core.GameMapFromString(str))
-    if (mirror) {
-        map.notes.forEach(x => x.lane = 6 - x.lane)
-    }
-    return map
-}
-

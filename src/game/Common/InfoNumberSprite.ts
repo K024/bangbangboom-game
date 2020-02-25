@@ -21,11 +21,11 @@ export class InfoNumberSprite extends NumberSprite {
         }
 
         if (info.children instanceof Array) {
-            info.children.forEach(x => {
+            for (const x of info.children) {
                 const c = new InfoSprite(x, textures)
                 this.addChild(c)
                 this.infoSprites.push(c)
-            })
+            }
         }
     }
 
@@ -36,16 +36,20 @@ export class InfoNumberSprite extends NumberSprite {
     update = (dt: number) => {
         if (!this.visible) return
         this.animation.update(dt)
-        this.infoSprites.forEach(x => (x as InfoSprite).update(dt))
+        for (const x of this.infoSprites) {
+            x.update(dt)
+        }
     }
 
     resetAnim() {
         this.animation.currentTime = 0
-        this.infoSprites.forEach(x => (x as InfoSprite).resetAnim())
+        for (const x of this.infoSprites) {
+            x.resetAnim()
+        }
     }
 
     allAnimEnd(): boolean {
         return this.animation.ended
-            && this.infoSprites.findIndex(x => !(x as InfoSprite).allAnimEnd()) < 0
+            && this.infoSprites.every(x => x.allAnimEnd())
     }
 }

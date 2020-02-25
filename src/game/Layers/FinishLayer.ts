@@ -1,14 +1,14 @@
-import { FixRatioContainer } from "../Common/FixRatioContainer";
-import { LayerWidth, LayerHeight } from "../Core/Constants";
-import { injectable, Container as IOC } from "inversify";
-import { GameState } from "../Core/GameState";
-import { SpriteInfo, NumberSpriteInfo, PositionInfo, setPositionInfo } from "../Common/InfoType";
-import { TextStyle, Text } from "pixi.js";
-import { GlobalEvents, Resources } from "../Utils/SymbolClasses";
-import { InfoSprite } from "../Common/InfoSprite";
-import { GameLoadConfig, GameConfig } from "../Core/GameConfig";
-import { InfoNumberSprite } from "../Common/InfoNumberSprite";
-import { AutoPlayLayer } from "./Sublayers/AutoPlayLayer";
+import { FixRatioContainer } from "../Common/FixRatioContainer"
+import { LayerWidth, LayerHeight } from "../Core/Constants"
+import { injectable, Container as IOC } from "inversify"
+import { GameState } from "../Core/GameState"
+import { SpriteInfo, NumberSpriteInfo, PositionInfo, setPositionInfo } from "../Common/InfoType"
+import { TextStyle, Text } from "pixi.js"
+import { GlobalEvents, Resources } from "../Utils/SymbolClasses"
+import { InfoSprite } from "../Common/InfoSprite"
+import { GameLoadConfig, GameConfig } from "../Core/GameConfig"
+import { InfoNumberSprite } from "../Common/InfoNumberSprite"
+import { AutoPlayLayer } from "./Sublayers/AutoPlayLayer"
 
 type FinishLayerInfo = {
     name?: {
@@ -38,8 +38,8 @@ export class FinishLayer extends FixRatioContainer {
 
 
         this.resize(...events.Resize.prevArgs)
-        events.Resize.add((w, h) => {
-            if (!this.parent) return "remove"
+        events.Resize.add((remove, w, h) => {
+            if (!this.parent) return remove()
             this.resize(w, h)
         })
 
@@ -55,7 +55,7 @@ export class FinishLayer extends FixRatioContainer {
 
         const numbers = ["perfect", "great", "good", "bad", "miss", "score", "combo"] as ["perfect", "great", "good", "bad", "miss", "score", "combo"]
         numbers.forEach(x => {
-            const n = new InfoNumberSprite(info[x], textures)
+            const n = new InfoNumberSprite(info[x], textures!)
             if (x === "combo") n.setValue(state.maxCombo)
             else n.setValue(state[x])
             this.addChild(n)
@@ -87,8 +87,8 @@ export class FinishLayer extends FixRatioContainer {
 
         this.addChild(retry, back)
 
-        events.Update.add(dt => {
-            if (!this.parent) return "remove"
+        events.Update.add((remove, dt) => {
+            if (!this.parent) return remove()
             this.children.forEach(x => {
                 if (x instanceof InfoSprite || x instanceof InfoNumberSprite) {
                     x.update(dt)

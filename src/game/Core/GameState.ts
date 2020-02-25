@@ -1,9 +1,9 @@
-import { GameMap, FromString, Note } from "./GameMap";
-import { injectable } from "inversify";
-import { Resources } from "../Utils/SymbolClasses";
-import { GameEvent } from "../Utils/GameEvent";
-import { Judge } from "./Constants";
-import { GameConfig } from "./GameConfig";
+import { GameMap, Note, fromRawMap } from "./GameMap"
+import { injectable } from "inversify"
+import { Resources } from "../Utils/SymbolClasses"
+import { GameEvent } from "../Utils/GameEvent"
+import { Judge } from "./Constants"
+import { GameConfig } from "./GameConfig"
 
 const scoremap = {
     perfect: 2000,
@@ -18,12 +18,17 @@ export type PointerEventInfo = { pointerId: number, time: number, lane: number, 
 @injectable()
 export class GameState {
     constructor(resources: Resources, config: GameConfig) {
-        this.map = FromString(resources.map.data, config.mirror)
+        this.map = fromRawMap(resources.map.data)
+        if (config.mirror) {
+            for (const n of this.map.notes)
+                n.lane = 6 - n.lane
+        }
         this.musicTime = Math.min(-1, this.map.notes[0].time - 5)
         this.maxScore = (scoremap.perfect + 1 + scoremap.perfect + this.map.combo) * this.map.combo / 2
 
-        this.onJudge.add((note) => {
-            if (this.ended) return "remove"
+        this.onJudge.add((remove, note) => {
+            if (this.ended) return remove()
+            if (!note.judge) return
             this.addJudge(note.judge)
         })
 
@@ -54,7 +59,7 @@ export class GameState {
 
     get paused() { return this._paused }
     get ended() { return this._ended }
-    get score() { return Math.floor(this.currentScore * 1000000 / this.maxScore) }
+    get score() { return (this.currentScore * 1000000 / this.maxScore) | 0 }
 
     onMusicTimeUpdate = new GameEvent<[{ musicTime: number, visualTime: number, judgeTime: number }]>()
     onPointer = new GameEvent<[PointerEventInfo]>()
@@ -75,8 +80,6 @@ export class GameState {
     private currentScore = 0
     private _ended = false
     private _paused = false
-    private judged = 0
-    private bonus = 0
 
     private addJudge(j: Judge) {
         if (j === "perfect" || j === "great") {
@@ -88,11 +91,8 @@ export class GameState {
         } else {
             this.currentCombo = 0
         }
-        this.currentScore += scoremap[j] + this.currentCombo
+        this.currentScore += scoremap[j] + this.maxCombo
         this[j]++
-        this.judged++
-        // if (this.judged === this.map.combo)
-        //     this.onEnd.emit()
     }
 }
 

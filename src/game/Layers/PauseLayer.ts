@@ -1,12 +1,12 @@
-import { Container, Graphics, Sprite, Texture } from "pixi.js";
-import { injectable } from "inversify";
-import { SpriteInfo } from "../Common/InfoType";
-import { GameState } from "../Core/GameState";
-import { GameConfig } from "../Core/GameConfig";
-import { Resources, GlobalEvents } from "../Utils/SymbolClasses";
-import { InfoSprite } from "../Common/InfoSprite";
-import { FixRatioContainer } from "../Common/FixRatioContainer";
-import { LayerHeight, LayerWidth } from "../Core/Constants";
+import { Container, Sprite, Texture } from "pixi.js"
+import { injectable } from "inversify"
+import { SpriteInfo } from "../Common/InfoType"
+import { GameState } from "../Core/GameState"
+import { GameConfig } from "../Core/GameConfig"
+import { Resources, GlobalEvents } from "../Utils/SymbolClasses"
+import { InfoSprite } from "../Common/InfoSprite"
+import { FixRatioContainer } from "../Common/FixRatioContainer"
+import { LayerHeight, LayerWidth } from "../Core/Constants"
 
 
 type PauseLayerInfo = {
@@ -30,8 +30,8 @@ export class PauseLayer extends Container {
         mask.width = events.Resize.prevArgs[0]
         mask.height = events.Resize.prevArgs[1]
         container.resize(...events.Resize.prevArgs)
-        events.Resize.add((w, h) => {
-            if (!this.parent) return "remove"
+        events.Resize.add((remove, w, h) => {
+            if (!this.parent) return remove()
             mask.width = w
             mask.height = h
             container.resize(w, h)
@@ -76,8 +76,8 @@ export class PauseLayer extends Container {
 
         container.addChild(continuebtn, restart, back)
 
-        events.Update.add(dt => {
-            if (!this.parent) return "remove"
+        events.Update.add((remove, dt) => {
+            if (!this.parent) return remove()
             this.children.forEach(x => {
                 if (x instanceof InfoSprite) {
                     x.update(dt)

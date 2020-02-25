@@ -1,4 +1,4 @@
-import { Sprite, Container, Texture, Point, ObservablePoint } from "pixi.js";
+import { Sprite, Container, Texture, ObservablePoint } from "pixi.js"
 
 class DigitSprite extends Sprite {
     constructor(public num: number, texture?: Texture) {
@@ -33,17 +33,18 @@ class NumberContentSprite extends Container {
         const dx = this.charWidth * scale + this.padding
         const offx = this.charWidth * scale / 2
         const offy = this.charHeight * scale / 2
-        this.children.forEach(x => {
+        for (const x of this.children) {
             this.saveDigit(x as DigitSprite)
-        })
+        }
         this.removeChildren()
-        digits.forEach((x, i) => {
+        for (let i = 0; i < digits.length; i++) {
+            const x = digits[i]
             const s = this.getDigit(x)
             s.position.set(offx + dx * i, offy)
             s.scale.set(scale)
             s.tint = this.tint
             this.addChild(s)
-        })
+        }
     }
 
     private getDigit(x: number) {
@@ -55,7 +56,7 @@ class NumberContentSprite extends Container {
         if (pool.length <= 0) {
             pool.push(new DigitSprite(x, this.tex[x]))
         }
-        return pool.pop()
+        return pool.pop()!
     }
 
     private saveDigit(s: DigitSprite) {

@@ -1,10 +1,9 @@
-import { FixRatioContainer } from "../Common/FixRatioContainer";
-import { LayerWidth, LayerHeight, LaneBottomY, LaneCenterXs, LaneInfY, CenterX, LaneWidth, FarLineY } from "../Core/Constants";
-import { injectable } from "inversify";
-import { GlobalEvents } from "../Utils/SymbolClasses";
-import { Graphics } from "pixi.js";
-import { Container as IOC } from "inversify"
-import { GameConfig } from "../Core/GameConfig";
+import { FixRatioContainer } from "../Common/FixRatioContainer"
+import { LayerWidth, LayerHeight, LaneBottomY, LaneCenterXs, LaneInfY, CenterX, LaneWidth, FarLineY } from "../Core/Constants"
+import { injectable } from "inversify"
+import { GlobalEvents } from "../Utils/SymbolClasses"
+import { Graphics } from "pixi.js"
+import { GameConfig } from "../Core/GameConfig"
 
 @injectable()
 export class DebugLayer extends FixRatioContainer {
@@ -13,12 +12,12 @@ export class DebugLayer extends FixRatioContainer {
         config: GameConfig
     ) {
         super(LayerWidth, LayerHeight)
-        this.visible = config.debug
+        this.visible = !!config.debug
         this.alpha = 0.2
 
         this.resize(...events.Resize.prevArgs)
-        events.Resize.add((w, h) => {
-            if (!this.parent) return "remove"
+        events.Resize.add((remove, w, h) => {
+            if (!this.parent) return remove()
             this.resize(w, h)
         })
 

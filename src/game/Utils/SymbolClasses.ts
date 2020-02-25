@@ -1,7 +1,7 @@
 import { GameEvent } from "./GameEvent"
 import { LoaderResource, Container, Sprite } from "pixi.js"
 import { injectable } from "inversify"
-import { GameConfig, staytime, GameLoadConfig } from "../Core/GameConfig"
+import { GameConfig, staytime } from "../Core/GameConfig"
 import { JudgePoint } from "../Core/GameMap"
 import { projection } from "../Core/Projection"
 import { LaneCenterXs } from "../Core/Constants"

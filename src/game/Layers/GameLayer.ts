@@ -1,17 +1,16 @@
-import { FixRatioContainer } from "../Common/FixRatioContainer";
-import { LayerWidth, LayerHeight } from "../Core/Constants";
-import { injectable } from "inversify";
+import { FixRatioContainer } from "../Common/FixRatioContainer"
+import { LayerWidth, LayerHeight } from "../Core/Constants"
+import { injectable } from "inversify"
 import { Container as IOC } from "inversify"
-import { GlobalEvents } from "../Utils/SymbolClasses";
-import { LaneLayer } from "./Sublayers/LaneLayer";
-import { IntereactionLayer } from "./Sublayers/IntereactionLayer";
-import { NotesLayer } from "./Sublayers/NotesLayer";
-import { MusciManager } from "../Core/MusicManager";
-import { UILayer } from "./Sublayers/UILayer";
-import { EffectLayer } from "./Sublayers/EffectLayer";
-import { LaneEffectLayer } from "./Sublayers/LaneEffectLayer";
-import { GameConfig } from "../Core/GameConfig";
-import { AutoPlayLayer } from "./Sublayers/AutoPlayLayer";
+import { GlobalEvents } from "../Utils/SymbolClasses"
+import { LaneLayer } from "./Sublayers/LaneLayer"
+import { IntereactionLayer } from "./Sublayers/IntereactionLayer"
+import { NotesLayer } from "./Sublayers/NotesLayer"
+import { UILayer } from "./Sublayers/UILayer"
+import { EffectLayer } from "./Sublayers/EffectLayer"
+import { LaneEffectLayer } from "./Sublayers/LaneEffectLayer"
+import { GameConfig } from "../Core/GameConfig"
+import { AutoPlayLayer } from "./Sublayers/AutoPlayLayer"
 
 @injectable()
 export class GameLayer extends FixRatioContainer {
@@ -19,8 +18,8 @@ export class GameLayer extends FixRatioContainer {
         super(LayerWidth, LayerHeight)
 
         this.resize(...events.Resize.prevArgs)
-        events.Resize.add((w, h) => {
-            if (!this.parent) return "remove"
+        events.Resize.add((remove, w, h) => {
+            if (!this.parent) return remove()
             this.resize(w, h)
         })
 

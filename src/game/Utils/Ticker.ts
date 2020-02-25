@@ -11,7 +11,7 @@ export class Ticker {
     SkipFrame = 0;
 
     Start() {
-        if (!this.EndFlag) return;
+        if (!this.EndFlag) return
         this.StopFlag = false
 
         let skipframecounter = 0
@@ -25,7 +25,7 @@ export class Ticker {
             requestAnimationFrame(func)
 
             if (skipframecounter > 0) {
-                skipframecounter--;
+                skipframecounter--
                 return
             }
             skipframecounter = this.SkipFrame

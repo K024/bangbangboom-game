@@ -6,9 +6,10 @@ LoadingBackground.src = LoadingBackgroundUrl
 
 export const LoadingMessages = [
     "Loading...",
-    "bangbangboom 今天炸了么",
+    "???",
     "在加载了",
-    "???"
+    "bangbangboom 炸了多久了",
+    "小鱼干 -20..鱼干不足",
 ]
 
 

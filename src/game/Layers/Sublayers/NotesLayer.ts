@@ -1,14 +1,14 @@
-import { Container } from "pixi.js";
+import { Container } from "pixi.js"
 import { injectable, Container as IOC } from "inversify"
-import { GameState } from "../../Core/GameState";
-import { NoteHelper } from "../../Utils/SymbolClasses";
-import { SlideBarSprite } from "../Components/SlideBarSprite";
-import { SimLineSprite } from "../Components/SimLineSprite";
-import { SingleNoteSprite } from "../Components/SingleNoteSprite";
-import { FlickNoteSprite } from "../Components/FlickNoteSprite";
-import { SlideNoteSprite } from "../Components/SlideNoteSprite";
-import { SlideAmongSprite } from "../Components/SlideAmongSprite";
-import { GameConfig } from "../../Core/GameConfig";
+import { GameState } from "../../Core/GameState"
+import { NoteHelper } from "../../Utils/SymbolClasses"
+import { SlideBarSprite } from "../Components/SlideBarSprite"
+import { SimLineSprite } from "../Components/SimLineSprite"
+import { SingleNoteSprite } from "../Components/SingleNoteSprite"
+import { FlickNoteSprite } from "../Components/FlickNoteSprite"
+import { SlideNoteSprite } from "../Components/SlideNoteSprite"
+import { SlideAmongSprite } from "../Components/SlideAmongSprite"
+import { GameConfig } from "../../Core/GameConfig"
 
 @injectable()
 class BarLayer extends Container {
@@ -96,8 +96,8 @@ class NoteLayer extends Container {
                 x.shouldRemove && x instanceof spriteType)
             if (!note) {
                 note = this.ioc.resolve(spriteType as any)
-                note.applyInfo(n as any)
-                this.addChild(note)
+                note!.applyInfo(n as any)
+                this.addChild(note!)
             } else {
                 note.applyInfo(n as any)
             }
@@ -131,8 +131,8 @@ export class NotesLayer extends Container {
     private simLineLayer: SimLineLayer
     private noteLayer: NoteLayer
 
-    update = (musicTime: { musicTime: number, visualTime: number, judgeTime: number, }) => {
-        if (this.state.ended) return "remove"
+    update = (remove: () => void, musicTime: { musicTime: number, visualTime: number, judgeTime: number, }) => {
+        if (this.state.ended) return remove()
 
         const time = this.helper.staytime + musicTime.visualTime
 

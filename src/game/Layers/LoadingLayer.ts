@@ -1,12 +1,12 @@
-import { FixRatioContainer } from "../Common/FixRatioContainer";
-import { injectable } from "inversify";
-import { LayerWidth, LayerHeight } from "../Core/Constants";
-import { Text, Container, TilingSprite, Texture, Graphics } from "pixi.js";
-import { LoadingBackground as LoadingBackground, LoadingMessages } from "../Common/InCodeAssests";
-import { GlobalEvents } from "../Utils/SymbolClasses";
-import { AnimationManager, CreatePixiTargetPropMapper, createSimpleAnimation, keyFramePresets } from "../Common/Animation";
-import { GameEvent } from "../Utils/GameEvent";
-import { GameLoadConfig } from "../Core/GameConfig";
+import { FixRatioContainer } from "../Common/FixRatioContainer"
+import { injectable } from "inversify"
+import { LayerWidth, LayerHeight } from "../Core/Constants"
+import { Text, Container, TilingSprite, Texture, Graphics } from "pixi.js"
+import { LoadingBackground as LoadingBackground, LoadingMessages } from "../Common/InCodeAssests"
+import { GlobalEvents } from "../Utils/SymbolClasses"
+import { AnimationManager, CreatePixiTargetPropMapper, createSimpleAnimation, keyFramePresets } from "../Common/Animation"
+import { GameEvent } from "../Utils/GameEvent"
+import { GameLoadConfig } from "../Core/GameConfig"
 
 class LoadProgress {
     progress = 0
@@ -67,15 +67,15 @@ export class LoadingLayer extends Container {
         barback.position.set(400, 380)
         container.addChild(barback)
 
-        const bar = new Graphics();
+        const bar = new Graphics()
         bar.position.set(400, 380)
         container.addChild(bar)
         this.addChild(container)
 
         const textanim = this.setTextAnim(text, events.Update)
 
-        events.Resize.add((w, h) => {
-            if (!this.parent) return "remove"
+        events.Resize.add((remove, w, h) => {
+            if (!this.parent) return remove()
 
             back.width = w
             back.height = h
@@ -85,8 +85,8 @@ export class LoadingLayer extends Container {
         })
 
         let lastProg = 0
-        events.Update.add((dt, now) => {
-            if (!this.parent) return "remove"
+        events.Update.add((remove, dt) => {
+            if (!this.parent) return remove()
 
             back.tilePosition.x += dt * 20
             back.tilePosition.y += dt * 10
@@ -130,6 +130,7 @@ export class LoadingLayer extends Container {
             textanim.paused = false
             textanim.animations.set("alpha", anim1)
             textanim.animations.set("x", anim2)
+            // eslint-disable-next-line @typescript-eslint/no-use-before-define
             textanim.onEnd.add(changeText2)
         }
         const anim3 = createSimpleAnimation(0, 1, 0.3, keyFramePresets.easeOut)
@@ -149,8 +150,8 @@ export class LoadingLayer extends Container {
             return "remove"
         }
 
-        update.add(dt => {
-            if (!this.parent) return "remove"
+        update.add((remove, dt) => {
+            if (!this.parent) return remove()
             timeout -= dt
             if (timeout < 0 && timeout + dt >= 0) changeText()
         })

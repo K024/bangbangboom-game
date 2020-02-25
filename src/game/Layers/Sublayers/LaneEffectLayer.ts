@@ -1,10 +1,10 @@
-import { Container, Sprite, Texture } from "pixi.js";
-import { injectable } from "inversify";
-import { Resources, GlobalEvents } from "../../Utils/SymbolClasses";
-import { AnimationManager, CreatePixiTargetPropMapper } from "../../Common/Animation";
-import { LaneBottomY, LaneCenterXs } from "../../Core/Constants";
-import { GameState } from "../../Core/GameState";
-import { GameConfig } from "../../Core/GameConfig";
+import { Container, Sprite, Texture } from "pixi.js"
+import { injectable } from "inversify"
+import { Resources, GlobalEvents } from "../../Utils/SymbolClasses"
+import { AnimationManager, CreatePixiTargetPropMapper } from "../../Common/Animation"
+import { LaneBottomY, LaneCenterXs } from "../../Core/Constants"
+import { GameState } from "../../Core/GameState"
+import { GameConfig } from "../../Core/GameConfig"
 
 export class LaneEffect extends Sprite {
     constructor(texture: Texture, flip = false) {
@@ -54,7 +54,7 @@ export class LaneEffectLayer extends Container {
 
         const effects = [0, 1, 2, 3, 4, 5, 6].map(x => {
             const i = (3 - Math.abs(x - 3))
-            const e = new LaneEffect(resources.game.textures["bg_line" + i], x > 3)
+            const e = new LaneEffect(resources.game.textures!["bg_line" + i], x > 3)
             e.y = LaneBottomY
             e.x = LaneCenterXs[x]
             e.visible = false
@@ -64,18 +64,18 @@ export class LaneEffectLayer extends Container {
 
         this.addChild(...effects)
 
-        events.Update.add(dt => {
-            if (state.ended) return "remove"
+        events.Update.add((remove, dt) => {
+            if (state.ended) return remove()
             if (state.paused) return
             effects.forEach(x => x.update(dt))
         })
 
-        state.onJudge.add(n => {
+        state.onJudge.add((remove, n) => {
             if (n.judge !== "miss")
                 effects[n.lane].setAnim()
         })
 
-        state.onEmptyTap.add(l => {
+        state.onEmptyTap.add((remove, l) => {
             effects[l].setAnim()
         })
 

@@ -14,7 +14,10 @@
         ],
         "noImplicitAny": true,
         "experimentalDecorators": true,
-        "emitDecoratorMetadata": true
+        "emitDecoratorMetadata": true,
+        "downlevelIteration": true,
+        "strict": true,
+        "strictNullChecks": true
     },
     "include": [
         "./**/*"

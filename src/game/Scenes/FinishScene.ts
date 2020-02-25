@@ -1,10 +1,10 @@
-import { Container } from "pixi.js";
-import { injectable } from "inversify";
+import { Container } from "pixi.js"
+import { injectable } from "inversify"
 import { Container as IOC } from "inversify"
-import { FinishLayer } from "../Layers/FinishLayer";
-import { GlobalEvents, MainStage } from "../Utils/SymbolClasses";
-import { ReadyScene } from "./ReadyScene";
-import { SceneSwitcher } from "../Utils/SceneSwitcher";
+import { FinishLayer } from "../Layers/FinishLayer"
+import { GlobalEvents } from "../Utils/SymbolClasses"
+import { ReadyScene } from "./ReadyScene"
+import { SceneSwitcher } from "../Utils/SceneSwitcher"
 
 @injectable()
 export class FinishScene extends Container {
@@ -18,9 +18,9 @@ export class FinishScene extends Container {
         }
         layer.onRetry = () => {
             const ready = ioc.resolve(ReadyScene)
-            swicher.switch(this, ready).outEnd.add(() => {
+            swicher.switch(this, ready).outEnd.add((remove) => {
                 this.destroy({ children: true })
-                return "remove"
+                return remove()
             })
         }
 

@@ -1,22 +1,22 @@
-import { Sprite2d } from "../../Common/Sprite2d";
-import { injectable } from "inversify";
-import { Resources, NoteHelper } from "../../Utils/SymbolClasses";
-import { SlideBar, SlideStart } from "../../Core/GameMap";
-import { ratio } from "../../../core/Utils";
-import { LaneCenterXs } from "../../Core/Constants";
-import { projection } from "../../Core/Projection";
-import { Matrix } from "pixi.js";
+import { Sprite2d } from "../../Common/Sprite2d"
+import { injectable } from "inversify"
+import { Resources, NoteHelper } from "../../Utils/SymbolClasses"
+import { SlideBar } from "../../Core/GameMap"
+import { ratio } from "../../../core/Utils"
+import { LaneCenterXs } from "../../Core/Constants"
+import { projection } from "../../Core/Projection"
+import { Matrix } from "pixi.js"
 
 @injectable()
 export class SlideBarSprite extends Sprite2d {
     constructor(resources: Resources, private helper: NoteHelper) {
-        super(resources.game.textures.slide_bar)
+        super(resources.game.textures?.slide_bar)
         this.anchor.set(0.5, 1)
         this.visible = false
     }
 
     shouldRemove = false
-    bar: SlideBar
+    bar?: SlideBar
 
     applyInfo(bar: SlideBar) {
         this.bar = bar
@@ -26,7 +26,7 @@ export class SlideBarSprite extends Sprite2d {
 
 
     update(musicTime: number) {
-        if (this.visible === false || this.shouldRemove) return
+        if (this.visible === false || this.shouldRemove || !this.bar) return
 
         let st = this.bar.start.time
         if (st < musicTime && this.bar.start.parent.pointerId) st = musicTime

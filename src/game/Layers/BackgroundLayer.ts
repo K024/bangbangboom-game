@@ -1,8 +1,8 @@
-import { FixRatioContainer } from "../Common/FixRatioContainer";
-import { injectable } from "inversify";
-import { GameConfig } from "../Core/GameConfig";
-import { Resources, GlobalEvents } from "../Utils/SymbolClasses";
-import { Sprite } from "pixi.js";
+import { FixRatioContainer } from "../Common/FixRatioContainer"
+import { injectable } from "inversify"
+import { GameConfig } from "../Core/GameConfig"
+import { Resources, GlobalEvents } from "../Utils/SymbolClasses"
+import { Sprite } from "pixi.js"
 
 @injectable()
 export class BackgroundLayer extends FixRatioContainer {
@@ -17,8 +17,8 @@ export class BackgroundLayer extends FixRatioContainer {
             this.resize(w, h, true)
         }
 
-        events.Resize.add((w, h) => {
-            if (!this.parent) return "remove"
+        events.Resize.add((remove, w, h) => {
+            if (!this.parent) return remove()
             this.resize(w, h, true)
         })
 

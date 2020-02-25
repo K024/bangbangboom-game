@@ -1,13 +1,14 @@
-import { Sprite, Texture, BLEND_MODES } from "pixi.js";
-import { AnimationManager, CreatePixiTargetPropMapper } from "./Animation";
-import { SpriteInfo, setPositionInfo } from "./InfoType";
+import { Sprite, Texture, BLEND_MODES } from "pixi.js"
+import { AnimationManager, CreatePixiTargetPropMapper } from "./Animation"
+import { SpriteInfo, setPositionInfo } from "./InfoType"
 
 export class InfoSprite extends Sprite {
-    constructor(info: SpriteInfo, textures: { [name: string]: Texture }) {
-        super(textures[info.texture])
+    constructor(info: SpriteInfo, textures?: { [name: string]: Texture }) {
+        super((info.texture && textures && textures[info.texture]) || undefined)
         this.animation.targetPropMapper = CreatePixiTargetPropMapper(this)
 
-        setPositionInfo(this, info.position)
+        if (info.position)
+            setPositionInfo(this, info.position)
 
         if (info.animations instanceof Object) {
             for (const prop in info.animations) {
@@ -16,10 +17,11 @@ export class InfoSprite extends Sprite {
         }
 
         if (info.children instanceof Array) {
-            info.children.forEach(x => {
+            for (const x of info.children) {
                 const c = new InfoSprite(x, textures)
                 this.addChild(c)
-            })
+                this.infoSprites.push(c)
+            }
         }
 
         if (info.blend === "add") this.blendMode = BLEND_MODES.ADD
@@ -28,23 +30,28 @@ export class InfoSprite extends Sprite {
 
     }
 
+    private infoSprites: InfoSprite[] = []
+
     animation = new AnimationManager()
 
     update = (dt: number) => {
         if (!this.visible) return
         this.animation.update(dt)
-        this.children.forEach(x => (x as InfoSprite).update(dt))
+        for (const x of this.infoSprites) {
+            x.update(dt)
+        }
     }
 
     resetAnim() {
         this.visible = true
         this.animation.currentTime = 0
-        this.children.forEach(x => (x as InfoSprite).resetAnim())
+        for (const x of this.infoSprites)
+            x.resetAnim()
     }
 
     allAnimEnd(): boolean {
         return this.animation.ended
-            && this.children.findIndex(x => !(x as InfoSprite).allAnimEnd()) < 0
+            && this.infoSprites.every(x => x.allAnimEnd())
     }
 }
 

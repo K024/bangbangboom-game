@@ -2,7 +2,6 @@ import "reflect-metadata"
 import { Ticker } from "./Utils/Ticker"
 import { GameConfig, GameLoadConfig } from "./Core/GameConfig"
 import { Container } from "inversify"
-import { GameEvent } from "./Utils/GameEvent"
 import { LoadingScene } from "./Scenes/LoadingScene"
 import { GlobalEvents, MainStage } from "./Utils/SymbolClasses"
 import { addAutoListener } from "./Utils/Utils"
@@ -80,7 +79,7 @@ export class Game {
 
     private _destroyed = false
 
-    ondestroyed: () => void
+    ondestroyed?: () => void
 
     destroy() {
         if (this._destroyed) return

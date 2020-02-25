@@ -1,18 +1,18 @@
-import { Container } from "pixi.js";
-import { injectable, Container as IOC } from "inversify";
-import { GameLayer } from "../Layers/GameLayer";
-import { DebugLayer } from "../Layers/DebugLayer";
-import { NoteHelper, MainStage, GlobalEvents } from "../Utils/SymbolClasses";
-import { GameState } from "../Core/GameState";
-import { GameConfig } from "../Core/GameConfig";
-import { AutoJudgeManager } from "../Core/JudgeManager.Auto";
-import { JudgeManager } from "../Core/JudgeManager";
-import { MusciManager } from "../Core/MusicManager";
-import { SoundManager } from "../Core/SoundManager";
-import { PauseLayer } from "../Layers/PauseLayer";
-import { FinishScene } from "./FinishScene";
-import { SceneSwitcher } from "../Utils/SceneSwitcher";
-import { ReadyScene } from "./ReadyScene";
+import { Container } from "pixi.js"
+import { injectable, Container as IOC } from "inversify"
+import { GameLayer } from "../Layers/GameLayer"
+import { DebugLayer } from "../Layers/DebugLayer"
+import { NoteHelper, MainStage, GlobalEvents } from "../Utils/SymbolClasses"
+import { GameState } from "../Core/GameState"
+import { GameConfig } from "../Core/GameConfig"
+import { AutoJudgeManager } from "../Core/JudgeManager.Auto"
+import { JudgeManager } from "../Core/JudgeManager"
+import { MusciManager } from "../Core/MusicManager"
+import { SoundManager } from "../Core/SoundManager"
+import { PauseLayer } from "../Layers/PauseLayer"
+import { FinishScene } from "./FinishScene"
+import { SceneSwitcher } from "../Utils/SceneSwitcher"
+import { ReadyScene } from "./ReadyScene"
 
 @injectable()
 export class GameScene extends Container {
@@ -25,6 +25,7 @@ export class GameScene extends Container {
         const state = ioc.resolve(GameState)
         ioc.bind(GameState).toConstantValue(state)
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const judger = config.autoplay ? ioc.resolve(AutoJudgeManager)
             : ioc.resolve(JudgeManager)
 

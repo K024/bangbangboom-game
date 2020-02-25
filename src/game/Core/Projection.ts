@@ -1,5 +1,5 @@
-import { CenterX, FarLineZ, LaneInfY, LaneBottomY } from "./Constants";
-import { ratio } from "../../core/Utils";
+import { CenterX, FarLineZ, LaneInfY, LaneBottomY } from "./Constants"
+import { ratio } from "../../core/Utils"
 
 
 /**
@@ -7,6 +7,7 @@ import { ratio } from "../../core/Utils";
  * @param t 0: near, -1: far
  * @returns 0 -> 1, ratio of y
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function fall(t: number) {
     return Math.pow(1.1, 50 * t)
 }
@@ -31,7 +32,7 @@ function fastfall(t: number) {
  */
 export function projection(trackpos: number, laneOffset: number) {
     // const f = fall(trackpos);
-    const f = fastfall(trackpos);
+    const f = fastfall(trackpos)
     const r = ((FarLineZ - 1) * f + 1) / FarLineZ
     return {
         x: CenterX + (laneOffset - CenterX) * r,

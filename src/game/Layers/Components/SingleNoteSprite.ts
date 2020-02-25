@@ -1,8 +1,8 @@
-import { Sprite } from "pixi.js";
-import { Resources, NoteHelper } from "../../Utils/SymbolClasses";
-import { Flick, SlideFlickEnd, Single } from "../../Core/GameMap";
-import { injectable } from "inversify";
-import { GameConfig } from "../../Core/GameConfig";
+import { Sprite } from "pixi.js"
+import { Resources, NoteHelper } from "../../Utils/SymbolClasses"
+import { Single } from "../../Core/GameMap"
+import { injectable } from "inversify"
+import { GameConfig } from "../../Core/GameConfig"
 
 @injectable()
 export class SingleNoteSprite extends Sprite {
@@ -13,13 +13,13 @@ export class SingleNoteSprite extends Sprite {
     }
 
     setTexture(lane: number) {
-        if (!this.note.onbeat && this.config.beatNote)
-            this.texture = this.resource.game.textures["gray_" + lane]
+        if (!this.note?.onbeat && this.config.beatNote)
+            this.texture = this.resource.game.textures!["gray_" + lane]
         else
-            this.texture = this.resource.game.textures["single_" + lane]
+            this.texture = this.resource.game.textures!["single_" + lane]
     }
 
-    note: Single
+    note?: Single
     shouldRemove = false
 
     applyInfo(note: Single) {
@@ -30,7 +30,7 @@ export class SingleNoteSprite extends Sprite {
     }
 
     update(musicTime: number) {
-        if (this.visible === false || this.shouldRemove) return
+        if (this.visible === false || this.shouldRemove || !this.note) return
 
         if (this.note.judge || musicTime > this.note.time + 1) {
             this.shouldRemove = true

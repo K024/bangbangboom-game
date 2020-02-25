@@ -1,4 +1,4 @@
-// tslint:disable: no-bitwise
+
 export function getByte(number: number, byte: number) {
     const off = (byte | 0) * 8
     const mask = 0xFF << off
@@ -21,16 +21,17 @@ export const colorByte = {
 export class ObjectPool<T> {
     private pool: T[] = []
 
-    newObj: () => T
+    newObj?: () => T
     pre?: (o: T) => T
     after?: (o: T) => T
 
     get() {
+        if (!this.newObj) throw new Error("Can not create new object")
         if (this.pool.length <= 0) {
             this.pool.push(this.newObj())
         }
         const v = this.pool.pop()
-        if (this.pre) return this.pre(v)
+        if (this.pre) return this.pre(v!)
         return v
     }
 
@@ -40,6 +41,7 @@ export class ObjectPool<T> {
     }
 
     ensure(n: number) {
+        if (!this.newObj) throw new Error("Can not create new object")
         while (this.pool.length < n) this.pool.push(this.newObj())
     }
 
@@ -48,11 +50,13 @@ export class ObjectPool<T> {
     }
 }
 
-/** a listener returns "remove" to remove itself from this.event */
-export function addAutoListener<K extends keyof WindowEventMap>
-    (element: HTMLElement | Window, event: K, listener: (ev: WindowEventMap[K]) => any) {
-    const wrap = (ev: WindowEventMap[K]) => {
-        if (listener(ev) === "remove") element.removeEventListener(event, wrap)
+
+export function addAutoListener<K extends keyof HTMLElementEventMap>
+    (element: HTMLElement | Window, event: K, listener: (remove: () => void, ev: HTMLElementEventMap[K]) => any) {
+    const wrap: any = (ev: HTMLElementEventMap[K]) => {
+        const remove = () => element.removeEventListener(event, wrap)
+        listener(remove, ev)
     }
     element.addEventListener(event, wrap)
+    return () => element.removeEventListener(event, wrap)
 }

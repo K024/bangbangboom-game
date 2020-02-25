@@ -1,10 +1,10 @@
-import { Container } from "pixi.js";
-import { injectable, Container as IOC } from "inversify";
-import { ReadyLayer } from "../Layers/ReadyLayer";
-import { GameScene } from "./GameScene";
-import { MainStage, GlobalEvents } from "../Utils/SymbolClasses";
-import { GameConfig } from "../Core/GameConfig";
-import { SceneSwitcher } from "../Utils/SceneSwitcher";
+import { Container } from "pixi.js"
+import { injectable, Container as IOC } from "inversify"
+import { ReadyLayer } from "../Layers/ReadyLayer"
+import { GameScene } from "./GameScene"
+import { GlobalEvents } from "../Utils/SymbolClasses"
+import { GameConfig } from "../Core/GameConfig"
+import { SceneSwitcher } from "../Utils/SceneSwitcher"
 
 
 @injectable()
@@ -13,7 +13,7 @@ export class ReadyScene extends Container {
         super()
 
         const layer = ioc.resolve(ReadyLayer)
-        layer.start = (auto: boolean) => {
+        layer.start = (auto?: boolean) => {
             if (auto) config.autoplay = true
             else config.autoplay = false
 

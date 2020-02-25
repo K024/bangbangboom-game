@@ -1,8 +1,8 @@
-import { injectable } from "inversify";
-import { GameState } from "./GameState";
-import { Resources, GlobalEvents } from "../Utils/SymbolClasses";
-import { GameConfig } from "./GameConfig";
-import { findex } from "../../core/Utils";
+import { injectable } from "inversify"
+import { GameState } from "./GameState"
+import { Resources, GlobalEvents } from "../Utils/SymbolClasses"
+import { findex } from "../../core/Utils"
+import { GameConfig } from "./GameConfig"
 
 @injectable()
 export class MusciManager {
@@ -17,13 +17,13 @@ export class MusciManager {
         let endPadding = Math.max(4 - music.duration() + findex(state.map.notes, -1).time, 0)
 
         music.once("end", () => {
-            events.Update.add(dt => {
-                if (state.ended) return "remove"
+            events.Update.add((remove, dt) => {
+                if (state.ended) return remove()
                 if (state.paused) return
                 endPadding -= dt
                 if (endPadding < 0) {
                     state.onEnd.emit()
-                    return "remove"
+                    return remove()
                 }
             })
         })
@@ -37,13 +37,19 @@ export class MusciManager {
 
         state.GetMusicTime = () => {
             let mt = music.seek(musicid) as number
-            if (mt === lastMt)
-                mt += (performance.now() - lastTime) / 1000
+            if (lastMt === mt) {
+                const off = (performance.now() - lastTime) / 1000
+                if (off < 0.03)
+                    mt += off
+            } else {
+                lastMt = mt
+                lastTime = performance.now()
+            }
             return mt
         }
 
-        events.Update.add(dt => {
-            if (state.ended) return "remove"
+        events.Update.add((remove, dt) => {
+            if (state.ended) return remove()
             if (state.paused) return
 
             let mt = 0
@@ -60,7 +66,9 @@ export class MusciManager {
             }
 
             if (lastMt === mt) {
-                mt += (performance.now() - lastTime) / 1000
+                const off = (performance.now() - lastTime) / 1000
+                if (off < 0.03)
+                    mt += off
             } else {
                 lastMt = mt
                 lastTime = performance.now()
@@ -76,9 +84,6 @@ export class MusciManager {
         events.WindowBlur.add(() => {
             state.onPause.emit()
         })
-        // events.WindowFocus.add(() => {
-        //     state.onContinue.emit()
-        // })
 
         state.onPause.add(() => {
             music.pause(musicid)
@@ -88,10 +93,10 @@ export class MusciManager {
             music.play(musicid)
         })
 
-        state.onMusicTimeUpdate.add(mt => {
+        state.onMusicTimeUpdate.add((remove, mt) => {
             if (state.onMusicTimeUpdate.prevArgs)
-                if (state.onMusicTimeUpdate.prevArgs[0].musicTime === mt.musicTime)
-                    console.warn("no use music time update:", mt.musicTime)
+                if (state.onMusicTimeUpdate.prevArgs[0] === mt)
+                    console.warn("no use music time update:", mt)
         })
 
         events.End.add(() => {

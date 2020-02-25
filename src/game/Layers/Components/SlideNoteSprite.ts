@@ -1,7 +1,7 @@
-import { Sprite } from "pixi.js";
-import { Resources, NoteHelper } from "../../Utils/SymbolClasses";
-import { SlideEnd, SlideStart } from "../../Core/GameMap";
-import { injectable } from "inversify";
+import { Sprite } from "pixi.js"
+import { Resources, NoteHelper } from "../../Utils/SymbolClasses"
+import { SlideEnd, SlideStart } from "../../Core/GameMap"
+import { injectable } from "inversify"
 
 @injectable()
 export class SlideNoteSprite extends Sprite {
@@ -12,10 +12,10 @@ export class SlideNoteSprite extends Sprite {
     }
 
     setTexture(lane: number) {
-        this.texture = this.resource.game.textures["slide_" + lane]
+        this.texture = this.resource.game.textures!["slide_" + lane]
     }
 
-    note: SlideStart | SlideEnd
+    note?: SlideStart | SlideEnd
     shouldRemove = false
 
     applyInfo(note: SlideStart | SlideEnd) {
@@ -26,7 +26,7 @@ export class SlideNoteSprite extends Sprite {
     }
 
     update(musicTime: number) {
-        if (this.visible === false || this.shouldRemove) return
+        if (this.visible === false || this.shouldRemove || !this.note) return
 
         if (this.note.judge || musicTime > this.note.time + 1) {
             this.shouldRemove = true

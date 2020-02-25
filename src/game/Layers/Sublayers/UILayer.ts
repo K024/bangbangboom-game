@@ -1,11 +1,11 @@
-import { Container, Texture, Sprite } from "pixi.js";
-import { injectable } from "inversify";
-import { GameState } from "../../Core/GameState";
-import { GameConfig } from "../../Core/GameConfig";
-import { SpriteInfo, NumberSpriteInfo } from "../../Common/InfoType";
-import { InfoSprite } from "../../Common/InfoSprite";
-import { Resources, GlobalEvents } from "../../Utils/SymbolClasses";
-import { InfoNumberSprite } from "../../Common/InfoNumberSprite";
+import { Container } from "pixi.js"
+import { injectable } from "inversify"
+import { GameState } from "../../Core/GameState"
+import { GameConfig } from "../../Core/GameConfig"
+import { SpriteInfo, NumberSpriteInfo } from "../../Common/InfoType"
+import { InfoSprite } from "../../Common/InfoSprite"
+import { Resources, GlobalEvents } from "../../Utils/SymbolClasses"
+import { InfoNumberSprite } from "../../Common/InfoNumberSprite"
 
 
 type UILayerInfo = {
@@ -33,8 +33,8 @@ export class UILayer extends Container {
         const judge = new InfoSprite(info.judge, textures)
         const pause = new InfoSprite(info.pause, textures)
 
-        const combo = new InfoNumberSprite(info.combo, textures)
-        const score = new InfoNumberSprite(info.score, textures)
+        const combo = new InfoNumberSprite(info.combo, textures!)
+        const score = new InfoNumberSprite(info.score, textures!)
 
         // if (!config.autoplay)
         this.addChild(judge)
@@ -51,9 +51,9 @@ export class UILayer extends Container {
         score.setValue(0)
         combo.visible = false
 
-        state.onJudge.add(note => {
-            if (!this.parent) return "remove"
-            judge.texture = textures[note.judge]
+        state.onJudge.add((remove, note) => {
+            if (!this.parent) return remove()
+            judge.texture = textures![note.judge!]
             judge.resetAnim()
             if (state.currentCombo > 0) {
                 combo.setValue(state.currentCombo)
@@ -66,8 +66,8 @@ export class UILayer extends Container {
             score.resetAnim()
         })
 
-        events.Update.add(dt => {
-            if (!this.parent) return "remove"
+        events.Update.add((remove, dt) => {
+            if (!this.parent) return remove()
             if (state.paused) return
             this.children.forEach(x => {
                 if (x instanceof InfoSprite || x instanceof InfoNumberSprite) {

@@ -1,17 +1,17 @@
-import { Sprite } from "pixi.js";
-import { Resources, NoteHelper } from "../../Utils/SymbolClasses";
-import { SlideAmong } from "../../Core/GameMap";
-import { injectable } from "inversify";
+import { Sprite } from "pixi.js"
+import { Resources, NoteHelper } from "../../Utils/SymbolClasses"
+import { SlideAmong } from "../../Core/GameMap"
+import { injectable } from "inversify"
 
 @injectable()
 export class SlideAmongSprite extends Sprite {
     constructor(resource: Resources, private helper: NoteHelper) {
-        super(resource.game.textures.slide_among)
+        super(resource.game.textures?.slide_among)
         this.anchor.set(0.5)
         this.visible = false
     }
 
-    note: SlideAmong
+    note?: SlideAmong
     shouldRemove = false
 
     applyInfo(note: SlideAmong) {
@@ -21,7 +21,7 @@ export class SlideAmongSprite extends Sprite {
     }
 
     update(musicTime: number) {
-        if (this.visible === false || this.shouldRemove) return
+        if (this.visible === false || this.shouldRemove || !this.note) return
 
         if (this.note.judge || musicTime > this.note.time + 1) {
             this.shouldRemove = true

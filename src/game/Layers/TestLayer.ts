@@ -1,10 +1,9 @@
-import { FixRatioContainer } from "../Common/FixRatioContainer";
-import { LayerWidth, LayerHeight } from "../Core/Constants";
-import { injectable } from "inversify";
-import { GlobalEvents, Resources } from "../Utils/SymbolClasses";
-import { Graphics, Texture } from "pixi.js";
-import { Sprite2d } from "../Common/Sprite2d";
-import { NumberSprite } from "../Common/NumberSprite";
+import { FixRatioContainer } from "../Common/FixRatioContainer"
+import { LayerWidth, LayerHeight } from "../Core/Constants"
+import { injectable } from "inversify"
+import { GlobalEvents, Resources } from "../Utils/SymbolClasses"
+import { Graphics } from "pixi.js"
+import { NumberSprite } from "../Common/NumberSprite"
 
 @injectable()
 export class TestLayer extends FixRatioContainer {
@@ -15,9 +14,9 @@ export class TestLayer extends FixRatioContainer {
         super(LayerWidth, LayerHeight)
 
         this.resize(...events.Resize.prevArgs)
-        events.Resize.add(this.resize.bind(this))
+        events.Resize.add((remove, x, y) => this.resize(x, y))
 
-        const numtex = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(x => x.toString()).map(x => resources.ui.textures[x])
+        const numtex = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(x => x.toString()).map(x => resources.ui.textures![x])
         const number = new NumberSprite(numtex)
         number.fontSize = 100
 

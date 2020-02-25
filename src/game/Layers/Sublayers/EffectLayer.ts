@@ -1,14 +1,13 @@
-import { Container, ITextureDictionary } from "pixi.js";
-import { injectable } from "inversify";
-import { EffectInfo } from "../../Common/InfoType";
-import { Resources, GlobalEvents } from "../../Utils/SymbolClasses";
-import { InfoEffect } from "../../Common/InfoEffect";
-import { InfoSprite } from "../../Common/InfoSprite";
-import { GameState } from "../../Core/GameState";
-import { SlideStart, SlideAmong, Slide } from "../../Core/GameMap";
-import { ratio, findex } from "../../../core/Utils";
-import { LaneCenterXs, LaneBottomY, LayerWidth, LayerHeight } from "../../Core/Constants";
-import { GameConfig } from "../../Core/GameConfig";
+import { Container, ITextureDictionary } from "pixi.js"
+import { injectable } from "inversify"
+import { EffectInfo } from "../../Common/InfoType"
+import { Resources, GlobalEvents } from "../../Utils/SymbolClasses"
+import { InfoEffect } from "../../Common/InfoEffect"
+import { GameState } from "../../Core/GameState"
+import { Slide } from "../../Core/GameMap"
+import { ratio, findex } from "../../../core/Utils"
+import { LaneCenterXs, LaneBottomY, LayerWidth, LayerHeight } from "../../Core/Constants"
+import { GameConfig } from "../../Core/GameConfig"
 
 type EffectLayerInfo = {
     tap: EffectInfo
@@ -20,7 +19,7 @@ type EffectLayerInfo = {
 
 export class SingleEffectLayer extends Container {
 
-    constructor(private info: EffectInfo, private textures: ITextureDictionary, private initScale: number) {
+    constructor(private info: EffectInfo, private textures: ITextureDictionary | undefined, private initScale: number) {
         super()
     }
 
@@ -100,7 +99,7 @@ export class EffectLayer extends Container {
 
         const slides = new Set<Slide>()
 
-        state.onJudge.add(n => {
+        state.onJudge.add((remove, n) => {
             if (n.judge === "miss") {
                 if ("parent" in n) {
                     slides.delete(n.parent)
@@ -121,7 +120,7 @@ export class EffectLayer extends Container {
                     slide.setTrackedEffect(() => {
                         const p = n.parent
                         const mt = state.onMusicTimeUpdate.prevArgs[0].visualTime
-                        const visible = n.parent.nextJudgeIndex < n.parent.notes.length
+                        const visible = p.nextJudgeIndex! < p.notes.length
                             && slides.has(p) && findex(p.notes, -1).time >= mt
                         return {
                             x: visible && GetSlidePos(p, mt) || 0,
@@ -134,7 +133,7 @@ export class EffectLayer extends Container {
             }
         })
 
-        state.onEmptyTap.add(l => {
+        state.onEmptyTap.add((remove, l) => {
             if (0 <= l && l <= 6)
                 tap.setEffect(LaneCenterXs[l], LaneBottomY)
         })
@@ -143,8 +142,8 @@ export class EffectLayer extends Container {
             fullcombo.setEffect(LayerWidth / 2, LayerHeight / 2)
         })
 
-        events.Update.add((dt: number) => {
-            if (!this.parent) return "remove"
+        events.Update.add((remove, dt) => {
+            if (!this.parent) return remove()
             if (state.paused) return
             this.children.forEach(x => {
                 if (x instanceof SingleEffectLayer) {

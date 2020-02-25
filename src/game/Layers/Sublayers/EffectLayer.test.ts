@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { EffectInfo } from "../../Common/InfoType"
 import { FixRatioContainer } from "../../Common/FixRatioContainer"
 import { LayerWidth, LayerHeight, LaneBottomY, FarLineY, LaneCenterXs, CenterX, LaneInfY, LaneWidth } from "../../Core/Constants"
@@ -422,7 +423,7 @@ export class TestApp extends Application {
 
         const effects = [0, 1, 2, 3, 4, 5, 6].map(x => {
             const i = (3 - Math.abs(x - 3))
-            const e = new LaneEffect(this.loader.resources.game.textures["bg_line" + i], x > 3)
+            const e = new LaneEffect(this.loader.resources.game.textures!["bg_line" + i], x > 3)
             e.y = LaneBottomY
             e.x = LaneCenterXs[x]
             e.visible = false

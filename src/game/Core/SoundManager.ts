@@ -1,7 +1,7 @@
-import { injectable } from "inversify";
-import { Resources, GlobalEvents } from "../Utils/SymbolClasses";
-import { GameState } from "./GameState";
-import { GameConfig } from "./GameConfig";
+import { injectable } from "inversify"
+import { Resources, GlobalEvents } from "../Utils/SymbolClasses"
+import { GameState } from "./GameState"
+import { GameConfig } from "./GameConfig"
 
 @injectable()
 export class SoundManager {
@@ -15,11 +15,11 @@ export class SoundManager {
             button: resources.button.data
         }
 
-        const lastTime: { [prop: string]: number } = {}
+        // const lastTime: { [prop: string]: number } = {}
         const play = (s: keyof typeof sounds) => {
-            const now = performance.now()
-            if (lastTime[s] && now - lastTime[s] < 10) return
-            lastTime[s] = now
+            // const now = performance.now()
+            // if (lastTime[s] && now - lastTime[s] < 10) return
+            // lastTime[s] = now
             sounds[s].play()
         }
 
@@ -27,8 +27,8 @@ export class SoundManager {
             sounds[(prop as keyof typeof sounds)].volume(config.effectVolume)
         }
 
-        state.onJudge.add((note) => {
-            if (state.ended) return "remove"
+        state.onJudge.add((remove, note) => {
+            if (state.ended) return remove()
 
             if (note.judge === "miss") {
                 if (note.type !== "single" && note.type !== "flick") {
@@ -43,8 +43,8 @@ export class SoundManager {
             }
         })
 
-        state.onEmptyTap.add(() => {
-            if (state.ended) return "remove"
+        state.onEmptyTap.add((remove) => {
+            if (state.ended) return remove()
 
             play("button")
         })

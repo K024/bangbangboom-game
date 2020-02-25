@@ -1,5 +1,5 @@
-import { Animation, AnimationManager, CreatePixiTargetPropMapper } from "./Animation";
-import { Application, Sprite } from "pixi.js";
+import { Animation, AnimationManager, CreatePixiTargetPropMapper } from "./Animation"
+import { Application, Sprite } from "pixi.js"
 
 const testanim: Animation = {
     totaltime: 5,
@@ -31,7 +31,7 @@ export class TestApp extends Application {
 
     loaded = () => {
         const manager = new AnimationManager()
-        const sprite = new Sprite(this.loader.resources.effect.textures.note_double)
+        const sprite = new Sprite(this.loader.resources.effect.textures?.note_double)
         const mapper = CreatePixiTargetPropMapper(sprite)
         mapper("r", 0xFF)
         mapper("g", 0x00)

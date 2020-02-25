@@ -2,7 +2,6 @@ import { Geometry, TYPES, AbstractBatchRenderer, Renderer, BatchShaderGenerator,
 
 // modified from
 // https://github.com/pixijs/pixi-projection/
-// tslint:disable: no-bitwise
 
 const shaderVert = `
 precision highp float;
@@ -46,9 +45,9 @@ class Batch2dGeometry extends Geometry {
     constructor(_static = false) {
         super()
 
-        this._buffer = new Buffer(null, _static, false)
+        this._buffer = new Buffer(null!, _static, false)
 
-        this._indexBuffer = new Buffer(null, _static, true)
+        this._indexBuffer = new Buffer(null!, _static, true)
 
         this.addAttribute('aVertexPosition', this._buffer, 3, false, TYPES.FLOAT)
             .addAttribute('aTextureCoord', this._buffer, 2, false, TYPES.FLOAT)
@@ -120,12 +119,12 @@ class Batch2dPlugin extends AbstractBatchRenderer {
 Renderer.registerPlugin('mybatch2d', Batch2dPlugin as any)
 
 export class Sprite2d extends Sprite {
-    constructor(texture: Texture) {
+    constructor(texture?: Texture) {
         super(texture)
         this.pluginName = 'mybatch2d'
     }
 
-    vertexData2d: Float32Array = null
+    vertexData2d?: Float32Array
 
     projection = new Point()
     get projectionX() { return this.projection.x }

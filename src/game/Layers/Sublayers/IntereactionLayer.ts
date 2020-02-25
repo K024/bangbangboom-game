@@ -1,8 +1,8 @@
-import { Container, Graphics, Rectangle, interaction } from "pixi.js";
-import { LayerHeight, CenterX, LaneWidth } from "../../Core/Constants";
-import { GameConfig } from "../../Core/GameConfig";
-import { injectable } from "inversify";
-import { GameState } from "../../Core/GameState";
+import { Container, Graphics, interaction } from "pixi.js"
+import { LayerHeight, CenterX, LaneWidth } from "../../Core/Constants"
+import { GameConfig } from "../../Core/GameConfig"
+import { injectable } from "inversify"
+import { GameState } from "../../Core/GameState"
 
 @injectable()
 export class IntereactionLayer extends Container {
@@ -12,7 +12,7 @@ export class IntereactionLayer extends Container {
     ) {
         super()
 
-        const hw = 3.7 * LaneWidth
+        const hw = 4.5 * LaneWidth
         const h = LayerHeight
 
         const rect = new Graphics()
@@ -31,8 +31,8 @@ export class IntereactionLayer extends Container {
             if (y < 0) return -1
             const pm = x >= 0 ? 1 : -1
             let dl = (Math.abs(x) + LaneWidth / 2) / LaneWidth
-            if (dl >= 4 && dl < 4.2) dl = 3.5
-            if (dl > 4) return -1
+            if (dl >= 5) return -1
+            if (dl >= 4) dl = 3.5
             return 3 + Math.floor(dl) * pm
         }
 

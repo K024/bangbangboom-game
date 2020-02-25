@@ -1,8 +1,7 @@
-import { injectable } from "inversify";
-import { MainStage, GlobalEvents } from "./SymbolClasses";
-import { Animation, AnimationManager, CreatePixiTargetPropMapper, createSimpleAnimation, keyFramePresets } from "../Common/Animation";
-import { Container } from "pixi.js";
-import { GameEvent } from "./GameEvent";
+import { injectable } from "inversify"
+import { MainStage, GlobalEvents } from "./SymbolClasses"
+import { AnimationManager, CreatePixiTargetPropMapper, createSimpleAnimation, keyFramePresets } from "../Common/Animation"
+import { Container } from "pixi.js"
 
 
 @injectable()
@@ -16,9 +15,8 @@ export class SceneSwitcher {
         outAnim.animations.set("alpha", createSimpleAnimation(1, 0, outTime, keyFramePresets.easeOut))
         inAnim.animations.set("alpha", createSimpleAnimation(0, 1, inTime, keyFramePresets.easeOut))
 
-        let ended = 0
-        this.events.Update.add(dt => {
-            if (outAnim.ended) return "remove"
+        this.events.Update.add((remove, dt) => {
+            if (outAnim.ended) return remove()
             outAnim.update(dt)
             if (outAnim.currentTime > inDelay)
                 inAnim.update(dt)
@@ -27,12 +25,8 @@ export class SceneSwitcher {
         const i = this.stage.getChildIndex(from)
         this.stage.addChildAt(to, i)
 
-        inAnim.onEnd.add(() => {
-            ended++
-        })
         outAnim.onEnd.add(() => {
             this.stage.removeChild(from)
-            ended++
         })
 
         return {

@@ -1,17 +1,17 @@
-import { Sprite, BLEND_MODES } from "pixi.js";
-import { injectable } from "inversify";
-import { Resources, NoteHelper } from "../../Utils/SymbolClasses";
-import { SimLine } from "../../Core/GameMap";
+import { Sprite } from "pixi.js"
+import { injectable } from "inversify"
+import { Resources, NoteHelper } from "../../Utils/SymbolClasses"
+import { SimLine } from "../../Core/GameMap"
 
 @injectable()
 export class SimLineSprite extends Sprite {
     constructor(resources: Resources, private helper: NoteHelper) {
-        super(resources.game.textures.simultaneous_line)
+        super(resources.game.textures?.simultaneous_line)
         this.anchor.set(0.5)
         this.visible = false
     }
 
-    sim: SimLine
+    sim?: SimLine
     shouldRemove = false
 
     applyInfo(sim: SimLine) {
@@ -22,7 +22,7 @@ export class SimLineSprite extends Sprite {
 
     update(musicTime: number) {
 
-        if (this.visible === false || this.shouldRemove) return
+        if (this.visible === false || this.shouldRemove || !this.sim) return
 
         if (this.sim.left.judge || this.sim.right.judge || musicTime > this.sim.left.time + 1) {
             this.shouldRemove = true

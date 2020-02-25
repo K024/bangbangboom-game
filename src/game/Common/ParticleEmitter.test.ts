@@ -1,5 +1,6 @@
-import { ParticleOption, ParticleEmitter } from "./ParticleEmitter";
-import { Application } from "pixi.js";
+import { ParticleOption, ParticleEmitter } from "./ParticleEmitter"
+import { Application } from "pixi.js"
+import { assert } from "../../core/Utils"
 
 const testoption: ParticleOption = {
     duration: 0,
@@ -45,7 +46,7 @@ export class TestApp extends Application {
 
     loaded = () => {
         const emitter = new ParticleEmitter(
-            [this.loader.resources.effect.textures.note_single], testoption)
+            [assert(this.loader.resources.effect.textures).note_single], testoption)
         this.stage.addChild(emitter)
         this.ticker.add(() => emitter.update(this.ticker.deltaMS / 1000))
         setInterval(() => emitter.currentTime = 0, 5000)

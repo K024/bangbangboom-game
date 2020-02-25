@@ -1,6 +1,6 @@
-import { Container, Text, BLEND_MODES } from "pixi.js";
-import { LayerWidth, LayerHeight } from "../../Core/Constants";
-import { injectable } from "inversify";
+import { Container, Text, BLEND_MODES } from "pixi.js"
+import { LayerWidth, LayerHeight } from "../../Core/Constants"
+import { injectable } from "inversify"
 
 @injectable()
 export class AutoPlayLayer extends Container {

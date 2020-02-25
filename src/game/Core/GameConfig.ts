@@ -1,3 +1,4 @@
+import { RawMap } from "../../core/Map"
 
 export class GameConfig {
     judgeOffset = 0
@@ -20,8 +21,9 @@ export class GameConfig {
 
 export class GameLoadConfig {
     musicSrc = ""
-    mapSrc = ""
+    mapContent = () => null as RawMap | Promise<RawMap> | null
     backgroundSrc = ""
+    coverSrc = ""
     skin = ""
     songName = ""
     loadingMessages?: string[]

@@ -11,7 +11,7 @@ type RangeNumber = {
 } | number[] | number
 
 function getRangeValue(n?: RangeNumber) {
-    if (n === undefined) return undefined
+    if (n === undefined) return 0
     if (typeof n === "number") return n
     if (n instanceof Array)
         return n[Math.floor(Math.random() * n.length)]
@@ -20,6 +20,7 @@ function getRangeValue(n?: RangeNumber) {
 }
 
 function ratio(start: number, end: number, target: number, from?: number, to?: number) {
+    if (from === undefined) return undefined
     if (to === undefined) return from
     const r = (target - start) / (end - start)
     return (to - from) * r + from
@@ -73,12 +74,12 @@ export class Particle extends Sprite {
     speedY = 0
     lifetime = 0
     currentTime = 0
-    gravity: { x: number, y: number }
+    gravity?: { x: number, y: number }
     accelRad = 0
     accelTan = 0
 
-    start: ParticleProperties
-    end: ParticleProperties
+    start: ParticleProperties = {}
+    end: ParticleProperties = {}
 
     constructor(texture: Texture) {
         super(texture)
@@ -120,6 +121,17 @@ export class Particle extends Sprite {
 
     shouldRemove = false
 
+    private setRatio(prop: keyof ParticleProperties, set: (v: number) => void) {
+        const v = ratio(0, this.lifetime, this.currentTime, this.start[prop], this.end[prop])
+        if (v !== undefined) set(v)
+    }
+    private setSize = (v: number) => this.scale.set(v)
+    private setSpin = (v: number) => this.rotation = v
+    private setR = (v: number) => this.tint = setByte(this.tint, 2, v)
+    private setG = (v: number) => this.tint = setByte(this.tint, 1, v)
+    private setB = (v: number) => this.tint = setByte(this.tint, 0, v)
+    private setAlpha = (v: number) => this.alpha = v
+
     // tslint:disable: no-bitwise
     /**
      * 
@@ -155,18 +167,12 @@ export class Particle extends Sprite {
             this.speedY += dvy * dt
         }
         {
-            const setRatio = (prop: keyof ParticleProperties, set: (v: number) => void) => {
-                const v = ratio(0, this.lifetime, this.currentTime, this.start[prop], this.end[prop])
-                if (v !== undefined) {
-                    set(v)
-                }
-            }
-            setRatio("size", v => this.scale.set(v))
-            setRatio("spin", v => this.rotation = v)
-            setRatio("r", v => this.tint = setByte(this.tint, 2, v))
-            setRatio("g", v => this.tint = setByte(this.tint, 1, v))
-            setRatio("b", v => this.tint = setByte(this.tint, 0, v))
-            setRatio("alpha", v => this.alpha = v)
+            this.setRatio("size", this.setSize)
+            this.setRatio("spin", this.setSpin)
+            this.setRatio("r", this.setR)
+            this.setRatio("g", this.setG)
+            this.setRatio("b", this.setB)
+            this.setRatio("alpha", this.setAlpha)
         }
     }
 
@@ -176,7 +182,7 @@ export class ParticleEmitter extends Container {
 
     private freeIndexes: number[] = []
 
-    constructor(private textures: Texture[], public option: ParticleOption) {
+    constructor(private textures: (Texture | undefined)[], public option: ParticleOption) {
         super()
     }
 
@@ -187,8 +193,8 @@ export class ParticleEmitter extends Container {
         x.visible = true
         x.setOption(this.option, this.offset)
         x.currentTime = 0
-        const i = Math.floor(Math.random() * this.textures.length)
-        x.texture = this.textures[i]
+        const i = (Math.random() * this.textures.length) | 0
+        x.texture = this.textures[i]!
         return x
     }
 
@@ -214,17 +220,17 @@ export class ParticleEmitter extends Container {
             while (this.counter > 1) {
                 this.counter -= 1
                 if (this.freeIndexes.length <= 0) {
-                    this.addChild(new Particle(this.textures[0]))
+                    this.addChild(new Particle(this.textures[0]!))
                     this.freeIndexes.push(this.children.length - 1)
                 }
-                const i = this.freeIndexes.pop()
+                const i = this.freeIndexes.pop()!
                 this.useParticle(i)
             }
         }
 
         let visibleCount = 0
-        this.children.forEach((c, i) => {
-            const p = c as Particle
+        for (let i = 0; i < this.children.length; i++) {
+            const p = this.children[i] as Particle
             if (!p.visible) return
             p.update(dt)
 
@@ -235,7 +241,7 @@ export class ParticleEmitter extends Container {
             }
 
             if (p.visible) visibleCount++
-        })
+        }
 
         if (!this.canEmit || this.option.duration > 0 && this.currentTime >= this.option.duration) {
             if (!this.emitEnded) this.onEmitEnd.emit()

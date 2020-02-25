@@ -4,11 +4,45 @@ declare type Optional<T> = {
 };
 
 declare module "bangbangboom-game" {
+    export type NoteBase = {
+        /** real time from music starts */
+        time: number
+        /** left: 0 ---- right : 6 */
+        lane: number
+    }
+
+    export type Single = NoteBase & {
+        type: "single"
+        /** is the note on beat or not */
+        onbeat: boolean
+    }
+
+    export type Flick = NoteBase & {
+        type: "flick"
+    }
+
+    export type Slide = {
+        id: number
+        flickend: boolean
+    }
+
+    export type SlideNote = NoteBase & {
+        type: "slide"
+        slideid: number
+    }
+
+    export type NoteType = Single | Flick | SlideNote
+
+    export type RawMap = {
+        notes: NoteType[]
+        slides: Slide[]
+    }
+
     export class Game {
         constructor(canvas: HTMLCanvasElement, config: Optional<GameConfig>, loadConfig: Optional<GameLoadConfig>);
         start(): void;
         pause(): void;
-        ondestroyed: () => void;
+        ondestroyed?: () => void;
         destroy(): void;
     }
 
@@ -31,7 +65,7 @@ declare module "bangbangboom-game" {
 
     export class GameLoadConfig {
         musicSrc: string;
-        mapSrc: string;
+        mapContent: () => (RawMap | Promise<RawMap> | null);
         backgroundSrc: string;
         skin: string;
         songName: string;
