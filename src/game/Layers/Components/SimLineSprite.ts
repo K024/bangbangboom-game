@@ -22,7 +22,7 @@ export class SimLineSprite extends Sprite {
 
     update(musicTime: number) {
 
-        if (this.visible === false || this.shouldRemove || !this.sim) return
+        if (!this.visible || this.shouldRemove || !this.sim) return
 
         if (this.sim.left.judge || this.sim.right.judge || musicTime > this.sim.left.time + 1) {
             this.shouldRemove = true

@@ -23,5 +23,8 @@ module.exports = merge(common, {
             ignored: /(node_modules)/,
             poll: 1000
         },
+        stats: {
+            modules: false
+        },
     },
 })

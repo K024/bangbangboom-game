@@ -49,7 +49,10 @@ export class InfoNumberSprite extends NumberSprite {
     }
 
     allAnimEnd(): boolean {
-        return this.animation.ended
-            && this.infoSprites.every(x => x.allAnimEnd())
+        if (!this.animation.ended) return false
+        for (const x of this.infoSprites) {
+            if (!x.allAnimEnd()) return false
+        }
+        return true
     }
 }

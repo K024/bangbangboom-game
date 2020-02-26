@@ -21,7 +21,7 @@ export class TestApp extends Application {
             width: canvas.clientWidth,
             height: canvas.clientHeight,
         })
-        this.loader.add("effect", "/assets/default/effect.json")
+        this.loader.add("effect", "/assets/skins/default/effect.json")
         this.loader.load(this.loaded)
         this.resizeTo = window
         this.ticker.add(() => {

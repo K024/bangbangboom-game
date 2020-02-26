@@ -23,8 +23,12 @@ export class GameState {
             for (const n of this.map.notes)
                 n.lane = 6 - n.lane
         }
-        this.musicTime = Math.min(-1, this.map.notes[0].time - 5)
+        this.musicTime = Math.min(-1, (this.map.notes[0]?.time || 0) - 5)
         this.maxScore = (scoremap.perfect + 1 + scoremap.perfect + this.map.combo) * this.map.combo / 2
+        if (this.maxScore <= 0) {
+            this.maxScore = 1
+            this.map.combo = 1
+        }
 
         this.onJudge.add((remove, note) => {
             if (this.ended) return remove()

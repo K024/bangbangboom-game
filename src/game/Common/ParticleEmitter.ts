@@ -11,7 +11,7 @@ type RangeNumber = {
 } | number[] | number
 
 function getRangeValue(n?: RangeNumber) {
-    if (n === undefined) return 0
+    if (n === undefined) return undefined
     if (typeof n === "number") return n
     if (n instanceof Array)
         return n[Math.floor(Math.random() * n.length)]
@@ -89,16 +89,16 @@ export class Particle extends Sprite {
     setOption(option: ParticleOption, offset: { x: number, y: number }) {
         if (option.blend === "add")
             this.blendMode = BLEND_MODES.ADD
-        const speed = getRangeValue(option.speed)
-        const radian = getRangeValue(option.radian)
+        const speed = getRangeValue(option.speed) || 0
+        const radian = getRangeValue(option.radian) || 0
         this.speedX = speed * Math.cos(radian)
         this.speedY = speed * Math.sin(radian)
-        this.lifetime = getRangeValue(option.lifeTime)
+        this.lifetime = getRangeValue(option.lifeTime) || 0
         this.gravity = option.gravity
-        this.accelRad = getRangeValue(option.accelRad)
-        this.accelTan = getRangeValue(option.accelTan)
-        this.startX = getRangeValue(option.emitRect.x) + offset.x
-        this.startY = getRangeValue(option.emitRect.y) + offset.y
+        this.accelRad = getRangeValue(option.accelRad) || 0
+        this.accelTan = getRangeValue(option.accelTan) || 0
+        this.startX = (getRangeValue(option.emitRect.x) || 0) + offset.x
+        this.startY = (getRangeValue(option.emitRect.y) || 0) + offset.y
         this.x = this.startX
         this.y = this.startY
         this.start = {
@@ -122,7 +122,7 @@ export class Particle extends Sprite {
     shouldRemove = false
 
     private setRatio(prop: keyof ParticleProperties, set: (v: number) => void) {
-        const v = ratio(0, this.lifetime, this.currentTime, this.start[prop], this.end[prop])
+        const v = ratio(0, this.lifetime, this.currentTime, this.start[prop], this.end && this.end[prop])
         if (v !== undefined) set(v)
     }
     private setSize = (v: number) => this.scale.set(v)
@@ -209,12 +209,10 @@ export class ParticleEmitter extends Container {
      */
     update(dt: number) {
         this.currentTime += dt
-        if (this.destroyed || this.currentTime < 0) {
-            return
-        }
+        if (this.destroyed || this.currentTime < 0) return
         if (this.currentTime - dt < 0) this.currentTime = 0
 
-        if (this.canEmit && this.option.duration <= 0 || this.currentTime - dt < this.option.duration) {
+        if (this.canEmit && (this.option.duration <= 0 || this.currentTime - dt < this.option.duration)) {
             const time = this.option.duration > 0 ? (this.currentTime < this.option.duration ? dt : this.option.duration - this.currentTime + dt) : dt
             this.counter += time * this.option.emissionRate
             while (this.counter > 1) {
@@ -231,16 +229,15 @@ export class ParticleEmitter extends Container {
         let visibleCount = 0
         for (let i = 0; i < this.children.length; i++) {
             const p = this.children[i] as Particle
-            if (!p.visible) return
+            if (!p.visible) continue
             p.update(dt)
 
             if (p.shouldRemove) {
                 p.shouldRemove = false
                 p.visible = false
                 this.freeIndexes.push(i)
-            }
-
-            if (p.visible) visibleCount++
+            } else
+                visibleCount++
         }
 
         if (!this.canEmit || this.option.duration > 0 && this.currentTime >= this.option.duration) {

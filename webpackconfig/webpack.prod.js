@@ -18,7 +18,7 @@ module.exports = merge(common, {
         new CopyWebpackPlugin([{
             from: path.join(__dirname, "../public"),
             to: path.join(__dirname, "../build"),
-            ignore: path.join(__dirname, "../public/index.html")
+            ignore: [path.join(__dirname, "../public/index.html")]
         }])
     ],
 

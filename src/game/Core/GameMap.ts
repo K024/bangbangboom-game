@@ -123,7 +123,7 @@ export function fromRawMap(map: RawMap.RawMap): GameMap {
                         notes.push({ type: "slideend", parent: s, time: n.time, lane: n.lane })
                 }
                 else
-                    notes.push({ type: "slideamong", parent: s, time: n.time, lane: n.time })
+                    notes.push({ type: "slideamong", parent: s, time: n.time, lane: n.lane })
                 const start = findex(s.notes, -1) as SlideStart
                 const end = findex(notes, -1) as SlideAmong
                 s.notes.push(end)

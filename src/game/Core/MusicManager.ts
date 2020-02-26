@@ -14,7 +14,7 @@ export class MusciManager {
         music.seek(0, musicid)
 
 
-        let endPadding = Math.max(4 - music.duration() + findex(state.map.notes, -1).time, 0)
+        let endPadding = Math.max(4 - music.duration() + (findex(state.map.notes, -1)?.time || 0), 0)
 
         music.once("end", () => {
             events.Update.add((remove, dt) => {
@@ -82,7 +82,8 @@ export class MusciManager {
         })
 
         events.WindowBlur.add(() => {
-            state.onPause.emit()
+            if (!state.paused)
+                state.onPause.emit()
         })
 
         state.onPause.add(() => {

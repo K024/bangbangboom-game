@@ -7,12 +7,16 @@ module.exports = {
         main: path.join(__dirname, '../src/main.ts')
     },
 
+    stats: {
+        modules: false
+    },
+
     module: {
         rules: [{
             test: /\.(tsx?)$/,
             exclude: /node_modules/,
             use: [{
-                loader: "awesome-typescript-loader"
+                loader: "ts-loader"
             }]
         }]
     },

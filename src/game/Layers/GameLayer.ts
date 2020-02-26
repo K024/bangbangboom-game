@@ -25,8 +25,8 @@ export class GameLayer extends FixRatioContainer {
 
         this.addChild(ioc.resolve(LaneLayer))
         this.addChild(ioc.resolve(LaneEffectLayer))
-        this.addChild(ioc.resolve(EffectLayer))
         this.addChild(ioc.resolve(NotesLayer))
+        this.addChild(ioc.resolve(EffectLayer))
         this.addChild(ioc.resolve(UILayer))
         this.addChild(ioc.resolve(IntereactionLayer))
 

@@ -25,9 +25,9 @@ export class UILayer extends Container {
         const textures = resources.ui.textures
 
         if (info.other instanceof Array) {
-            info.other.forEach(x => {
+            for (const x of info.other) {
                 this.addChild(new InfoSprite(x, textures))
-            })
+            }
         }
 
         const judge = new InfoSprite(info.judge, textures)
@@ -69,11 +69,11 @@ export class UILayer extends Container {
         events.Update.add((remove, dt) => {
             if (!this.parent) return remove()
             if (state.paused) return
-            this.children.forEach(x => {
+            for (const x of this.children) {
                 if (x instanceof InfoSprite || x instanceof InfoNumberSprite) {
                     x.update(dt)
                 }
-            })
+            }
         })
     }
 }

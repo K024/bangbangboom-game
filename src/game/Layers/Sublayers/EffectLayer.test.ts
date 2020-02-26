@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
+import "reflect-metadata"
 import { EffectInfo } from "../../Common/InfoType"
 import { FixRatioContainer } from "../../Common/FixRatioContainer"
 import { LayerWidth, LayerHeight, LaneBottomY, FarLineY, LaneCenterXs, CenterX, LaneInfY, LaneWidth } from "../../Core/Constants"
@@ -404,8 +405,8 @@ export class TestApp extends Application {
             width: canvas.clientWidth,
             height: canvas.clientHeight,
         })
-        this.loader.add("effect", "/assets/default/effect.json")
-        this.loader.add("game", "/assets/default/game.json")
+        this.loader.add("effect", "/assets/skins/default/effect.json")
+        this.loader.add("game", "/assets/skins/default/game.json")
         this.loader.load(this.loaded)
         this.resizeTo = window
     }
@@ -459,6 +460,10 @@ export class TestApp extends Application {
             effects[i].setAnim()
             layer.setEffect(LaneCenterXs[i], LaneBottomY)
         }, 200)
+
+        setInterval(() => {
+            console.log(layer.children.length)
+        }, 2000)
     }
 }
 

@@ -36,9 +36,10 @@ export class GameScene extends Container {
         if (config.debug)
             this.addChild(ioc.resolve(DebugLayer))
 
-        const pauseLayer = ioc.resolve(PauseLayer)
+        let pauseLayer: Container
 
         state.onPause.add(() => {
+            pauseLayer = ioc.resolve(PauseLayer)
             this.addChild(pauseLayer)
         })
 

@@ -31,8 +31,10 @@ export class Ticker {
             skipframecounter = this.SkipFrame
 
             const n = now()
-            if (this.Tick)
-                this.Tick.forEach(t => t(n - this.lasttime, n))
+            if (this.Tick) {
+                for (const t of this.Tick)
+                    t(n - this.lasttime, n)
+            }
 
             this.lasttime = n
         }

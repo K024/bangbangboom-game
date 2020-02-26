@@ -13,10 +13,10 @@ export class IntereactionLayer extends Container {
         super()
 
         const hw = 4.5 * LaneWidth
-        const h = LayerHeight
+        const h = LayerHeight * 1.2
 
         const rect = new Graphics()
-        rect.position.set(CenterX, LayerHeight / 2)
+        rect.position.set(CenterX, LayerHeight * 0.3)
         rect.lineStyle(3, 0xff0088)
         rect.moveTo(-hw, 0).lineTo(hw, 0).lineTo(hw, h).lineTo(-hw, h).lineTo(-hw, 0)
 

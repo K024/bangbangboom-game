@@ -34,9 +34,9 @@ export class AutoJudgeManager extends AbsctractJudgeManager {
                 }
                 setTimeout(() => {
                     state.onJudge.emit(note)
-                    const offset = state.GetMusicTime() - list[i].time
+                    const offset = state.GetMusicTime() - note.time
                     timeoutOffset = timeoutOffset * 0.9 + offset * 0.01
-                }, time - list[i].time - timeoutOffset)
+                }, time - note.time - timeoutOffset)
                 i++
             }
             nextJudgeIndex = i

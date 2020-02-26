@@ -26,7 +26,7 @@ export class SlideBarSprite extends Sprite2d {
 
 
     update(musicTime: number) {
-        if (this.visible === false || this.shouldRemove || !this.bar) return
+        if (!this.visible || this.shouldRemove || !this.bar) return
 
         let st = this.bar.start.time
         if (st < musicTime && this.bar.start.parent.pointerId) st = musicTime

@@ -110,7 +110,6 @@ export class LoadingScene extends Container {
     }
 
     private loaded = (loader: Loader, res: Partial<Record<string, LoaderResource>>) => {
-        console.log("loaded")
         this.ioc.bind(Resources).toConstantValue(res as any)
         const stage = this.ioc.get(MainStage)
 

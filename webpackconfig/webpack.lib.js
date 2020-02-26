@@ -5,6 +5,10 @@ module.exports = {
     // mode: "development",
     mode: "production",
 
+    stats: {
+        modules: false
+    },
+
     entry: {
         main: path.join(__dirname, '../src/index.ts')
     },
@@ -24,7 +28,7 @@ module.exports = {
             test: /\.(tsx?)$/,
             exclude: /node_modules/,
             use: [{
-                loader: "awesome-typescript-loader"
+                loader: "ts-loader"
             }]
         }]
     },

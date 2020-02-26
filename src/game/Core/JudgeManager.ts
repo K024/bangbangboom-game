@@ -86,7 +86,7 @@ export class JudgeManager extends AbsctractJudgeManager {
 
             for (const x of pool) {
                 // focus on notes can miss
-                if (mt - x.time >= 0.1) continue
+                if (!(mt - x.time >= 0.1)) continue
                 const j = getJudgeFunction(x)(mt - x.time)
                 if (j === "miss") {
                     x.judge = j
@@ -180,7 +180,7 @@ export class JudgeManager extends AbsctractJudgeManager {
                     const index = (x.parent.nextJudgeIndex || 0) + 1
                     if (x.parent.notes[index] === x && mt >= x.time && lastMusicTime < x.time) {
                         const last = x.parent.notes[index - 1]
-                        if (last.judge) return
+                        if (last.judge) continue
                         last.judge = "miss"
                         x.parent.nextJudgeIndex = index
                         state.onJudge.emit(last)

@@ -19,22 +19,33 @@ class BarLayer extends Container {
 
     private nextBarIndex = 0
 
+    private pool: SlideBarSprite[] = []
+    private freeIndexes: number[] = []
+
     update(musicTime: number, showTime: number) {
         let index = this.nextBarIndex
         const list = this.state.map.bars
         while (index < list.length && list[index].start.time < showTime) {
-            let bar = (this.children as SlideBarSprite[]).find(x => x.shouldRemove)
-            if (!bar) {
-                bar = this.ioc.resolve(SlideBarSprite)
-                bar.applyInfo(list[index])
-                this.addChild(bar)
-            } else {
-                bar.applyInfo(list[index])
+            let i = this.freeIndexes.pop()
+            if (i === undefined) {
+                i = this.pool.length
+                const b = this.ioc.resolve(SlideBarSprite)
+                this.addChild(b)
+                this.pool.push(b)
             }
+            const bar = this.pool[i]
+            bar.applyInfo(list[index])
             index++
         }
         this.nextBarIndex = index
-        this.children.forEach(x => (x as SlideBarSprite).update(musicTime))
+        for (let i = 0; i < this.pool.length; i++) {
+            const x = this.pool[i]
+            x.update(musicTime)
+            if (x.shouldRemove) {
+                x.shouldRemove = false
+                this.freeIndexes.push(i)
+            }
+        }
 
     }
 }
@@ -48,23 +59,34 @@ class SimLineLayer extends Container {
 
     private nextSimIndex = 0
 
+    private pool: SimLineSprite[] = []
+    private freeIndexes: number[] = []
+
     update(musicTime: number, showTime: number) {
         if (this.config.showSimLine) {
             let index = this.nextSimIndex
             const list = this.state.map.simlines
             while (index < list.length && list[index].left.time < showTime) {
-                let sim = (this.children as SimLineSprite[]).find(x => x.shouldRemove)
-                if (!sim) {
-                    sim = this.ioc.resolve(SimLineSprite)
-                    sim.applyInfo(list[index])
-                    this.addChild(sim)
-                } else {
-                    sim.applyInfo(list[index])
+                let i = this.freeIndexes.pop()
+                if (i === undefined) {
+                    i = this.pool.length
+                    const s = this.ioc.resolve(SimLineSprite)
+                    this.addChild(s)
+                    this.pool.push(s)
                 }
+                const sim = this.pool[i]
+                sim.applyInfo(list[index])
                 index++
             }
             this.nextSimIndex = index
-            this.children.forEach(x => (x as SimLineSprite).update(musicTime))
+            for (let i = 0; i < this.pool.length; i++) {
+                const x = this.pool[i]
+                x.update(musicTime)
+                if (x.shouldRemove) {
+                    x.shouldRemove = false
+                    this.freeIndexes.push(i)
+                }
+            }
         }
     }
 }
@@ -83,28 +105,41 @@ class NoteLayer extends Container {
     constructor(private state: GameState, private ioc: IOC) {
         super()
         this.sortableChildren = true
+        this.freeIndexes = {}
+        for (const key in spritemap)
+            this.freeIndexes[key] = []
     }
 
     private nextNoteIndex = 0
+
+    private pool: noteSprite[] = []
+    private freeIndexes: { [key: string]: number[] }
+
     update(musicTime: number, showTime: number) {
         let index = this.nextNoteIndex
         const list = this.state.map.notes
         while (index < list.length && list[index].time < showTime) {
-            const n = list[index]
-            const spriteType = spritemap[n.type]
-            let note = (this.children as noteSprite[]).find(x =>
-                x.shouldRemove && x instanceof spriteType)
-            if (!note) {
-                note = this.ioc.resolve(spriteType as any)
-                note!.applyInfo(n as any)
-                this.addChild(note!)
-            } else {
-                note.applyInfo(n as any)
+            const info = list[index]
+            let i = this.freeIndexes[info.type].pop()
+            if (i === undefined) {
+                i = this.pool.length
+                const n = this.ioc.resolve(spritemap[info.type] as any) as any
+                this.addChild(n)
+                this.pool.push(n)
             }
+            const note = this.pool[i]
+            note.applyInfo(info as any)
             index++
         }
         this.nextNoteIndex = index
-        this.children.forEach(x => (x as noteSprite).update(musicTime))
+        for (let i = 0; i < this.pool.length; i++) {
+            const x = this.pool[i]
+            x.update(musicTime)
+            if (x.shouldRemove) {
+                x.shouldRemove = false
+                this.freeIndexes[x.note!.type].push(i)
+            }
+        }
     }
 }
 

@@ -9,7 +9,7 @@ export class BackgroundLayer extends FixRatioContainer {
     constructor(config: GameConfig, resources: Resources, events: GlobalEvents) {
         super(0, 0)
 
-        const bg = new Sprite(resources.background.texture)
+        const bg = new Sprite(resources.background?.texture)
         bg.alpha = 1 - config.backgroundDim
         this.setInit(bg.width, bg.height)
         {

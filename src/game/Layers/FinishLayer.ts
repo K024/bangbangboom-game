@@ -48,9 +48,9 @@ export class FinishLayer extends FixRatioContainer {
 
 
         if (info.other instanceof Array) {
-            info.other.forEach(x => {
+            for (const x of info.other) {
                 this.addChild(new InfoSprite(x, textures))
-            })
+            }
         }
 
         const numbers = ["perfect", "great", "good", "bad", "miss", "score", "combo"] as ["perfect", "great", "good", "bad", "miss", "score", "combo"]
@@ -89,11 +89,11 @@ export class FinishLayer extends FixRatioContainer {
 
         events.Update.add((remove, dt) => {
             if (!this.parent) return remove()
-            this.children.forEach(x => {
+            for (const x of this.children) {
                 if (x instanceof InfoSprite || x instanceof InfoNumberSprite) {
                     x.update(dt)
                 }
-            })
+            }
         })
 
         if (config.autoplay) {

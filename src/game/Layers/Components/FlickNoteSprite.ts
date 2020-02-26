@@ -33,7 +33,7 @@ export class FlickNoteSprite extends Sprite {
     }
 
     update(musicTime: number) {
-        if (this.visible === false || this.shouldRemove || !this.note) return
+        if (!this.visible || this.shouldRemove || !this.note) return
 
         if (this.note.judge || musicTime > this.note.time + 1) {
             this.shouldRemove = true

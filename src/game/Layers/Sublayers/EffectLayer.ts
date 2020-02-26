@@ -24,34 +24,43 @@ export class SingleEffectLayer extends Container {
     }
 
     update(dt: number) {
-        this.children.forEach(x => {
+        for (let i = 0; i < this.children.length; i++) {
+            const x = this.children[i]
             if (x instanceof InfoEffect) {
                 x.update(dt)
-                if (x.allAnimEnd())
+                if (x.visible && x.allAnimEnd()) {
                     x.visible = false
+                    this.freeIndexes.push(i)
+                }
             }
-        })
+        }
     }
 
+    private freeIndexes: number[] = []
+
     setEffect(x: number, y: number) {
-        let e = this.children.find(ef => !ef.visible) as InfoEffect
-        if (!e) {
-            e = new InfoEffect(this.info, this.textures)
-            e.scale.set(this.initScale)
-            this.addChild(e)
+        let i = this.freeIndexes.pop()
+        if (i === undefined) {
+            i = this.children.length
+            const eff = new InfoEffect(this.info, this.textures)
+            eff.scale.set(this.initScale)
+            this.addChild(eff)
         }
+        const e = this.children[i] as InfoEffect
         e.setPosition(x, y)
         e.resetAnim()
         e.visible = true
     }
 
     setTrackedEffect(tracker: () => { x: number, y: number, visible: boolean }) {
-        let e = this.children.find(ef => !ef.visible) as InfoEffect
-        if (!e) {
-            e = new InfoEffect(this.info, this.textures)
-            e.scale.set(this.initScale)
-            this.addChild(e)
+        let i = this.freeIndexes.pop()
+        if (i === undefined) {
+            i = this.children.length
+            const eff = new InfoEffect(this.info, this.textures)
+            eff.scale.set(this.initScale)
+            this.addChild(eff)
         }
+        const e = this.children[i] as InfoEffect
 
         const pupdate = e.update
         e.update = dt => {
@@ -145,15 +154,13 @@ export class EffectLayer extends Container {
         events.Update.add((remove, dt) => {
             if (!this.parent) return remove()
             if (state.paused) return
-            this.children.forEach(x => {
+            for (const x of this.children) {
                 if (x instanceof SingleEffectLayer) {
                     x.update(dt)
                 }
-            })
+            }
         })
 
         this.addChild(tap, single, flick, slide, fullcombo)
     }
-
-
 }

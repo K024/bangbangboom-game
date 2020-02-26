@@ -3,30 +3,16 @@ import { Application } from "pixi.js"
 import { assert } from "../../core/Utils"
 
 const testoption: ParticleOption = {
-    duration: 0,
-    emissionRate: 100,
-    emitRect: {
-        x: { base: 300, offset: 50 },
-        y: { base: 300, offset: 0 },
-    },
-    lifeTime: { base: 0.5, offset: 0.2 },
-    radian: -Math.PI / 2,
-    speed: { base: 300, offset: 200 },
-    accelRad: -400,
-    blend: "add",
-
-    start: {
-        size: 0.2,
-        r: 51,
-        g: 102,
-        b: { base: 178, offset: 30 }
-    },
-    end: {
-        size: 0.3,
-        r: 80,
-        g: 20,
-        b: 50
-    }
+    duration: 0.02,
+    emissionRate: 1000,
+    emitRect: { x: { base: 0, offset: 70 }, y: 0 },
+    lifeTime: { max: 0.8, min: 0.2 },
+    radian: -1.52,
+    speed: { max: 800, min: 100 },
+    gravity: { x: 0, y: 300 },
+    start: { size: { min: 0.05, max: 0.35 }, r: [100, 160], g: 220, b: 250, alpha: 0.6, spin: { base: 0, offset: 3.14 } },
+    end: { alpha: 0, size: 0.1, spin: 0 },
+    blend: "add"
 }
 
 export class TestApp extends Application {
@@ -36,7 +22,7 @@ export class TestApp extends Application {
             width: canvas.clientWidth,
             height: canvas.clientHeight,
         })
-        this.loader.add("effect", "/assets/default/effect.json")
+        this.loader.add("effect", "/assets/skins/default/effect.json")
         this.loader.load(this.loaded)
         this.resizeTo = window
         this.ticker.add(() => {
@@ -48,8 +34,9 @@ export class TestApp extends Application {
         const emitter = new ParticleEmitter(
             [assert(this.loader.resources.effect.textures).note_single], testoption)
         this.stage.addChild(emitter)
+        emitter.position.set(200)
         this.ticker.add(() => emitter.update(this.ticker.deltaMS / 1000))
-        setInterval(() => emitter.currentTime = 0, 5000)
+        setInterval(() => emitter.currentTime = 0, 2000)
     }
 }
 

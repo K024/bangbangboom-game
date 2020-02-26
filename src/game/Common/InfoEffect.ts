@@ -62,25 +62,24 @@ export class InfoEffect extends Container {
     }
 
     stopEmit() {
-        this.children.forEach(x => {
+        for (const x of this.children) {
             if (x instanceof ParticleEmitter) {
                 x.canEmit = false
             } else if (x instanceof InfoSprite) {
                 x.visible = false
             }
-        })
+        }
     }
 
     allAnimEnd() {
-        return this.children.findIndex(x => {
+        for (const x of this.children) {
             if (x instanceof ParticleEmitter) {
-                if (x.allEnd) return false
+                if (!x.allEnd) return false
             } else if (x instanceof InfoSprite) {
-                if (!x.visible) return false
-                if (x.allAnimEnd()) return false
+                if (!x.allAnimEnd()) return false
             }
-            return true
-        }) < 0
+        }
+        return true
     }
 }
 

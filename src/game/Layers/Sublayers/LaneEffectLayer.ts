@@ -67,7 +67,9 @@ export class LaneEffectLayer extends Container {
         events.Update.add((remove, dt) => {
             if (state.ended) return remove()
             if (state.paused) return
-            effects.forEach(x => x.update(dt))
+            for (const x of effects) {
+                x.update(dt)
+            }
         })
 
         state.onJudge.add((remove, n) => {
