@@ -4,7 +4,7 @@ import { Container as IOC } from "inversify"
 import { FinishLayer } from "../Layers/FinishLayer"
 import { GlobalEvents } from "../Utils/SymbolClasses"
 import { ReadyScene } from "./ReadyScene"
-import { SceneSwitcher } from "../Utils/SceneSwitcher"
+import { SceneSwitcher } from "./SceneSwitcher"
 
 @injectable()
 export class FinishScene extends Container {

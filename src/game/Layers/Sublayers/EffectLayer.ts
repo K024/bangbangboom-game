@@ -1,13 +1,14 @@
 import { Container, ITextureDictionary } from "pixi.js"
 import { injectable } from "inversify"
-import { EffectInfo } from "../../Common/InfoType"
+import { EffectInfo } from "../../Common/InfoObject/InfoType"
 import { Resources, GlobalEvents } from "../../Utils/SymbolClasses"
-import { InfoEffect } from "../../Common/InfoEffect"
+import { InfoEffect } from "../../Common/InfoObject/InfoEffect"
 import { GameState } from "../../Core/GameState"
 import { Slide } from "../../Core/GameMap"
 import { ratio, findex } from "../../../core/Utils"
 import { LaneCenterXs, LaneBottomY, LayerWidth, LayerHeight } from "../../Core/Constants"
 import { GameConfig } from "../../Core/GameConfig"
+import { ObjectPool } from "../../Utils/Utils"
 
 type EffectLayerInfo = {
     tap: EffectInfo
@@ -21,7 +22,16 @@ export class SingleEffectLayer extends Container {
 
     constructor(private info: EffectInfo, private textures: ITextureDictionary | undefined, private initScale: number) {
         super()
+        this.pool.newObj = () => {
+            const eff = new InfoEffect(this.info, this.textures)
+            eff.scale.set(this.initScale)
+            this.addChild(eff)
+            return eff
+        }
+        this.pool.beforeSave = e => e.visible = false
     }
+
+    private pool = new ObjectPool<InfoEffect>()
 
     update(dt: number) {
         for (let i = 0; i < this.children.length; i++) {
@@ -29,38 +39,21 @@ export class SingleEffectLayer extends Container {
             if (x instanceof InfoEffect) {
                 x.update(dt)
                 if (x.visible && x.allAnimEnd()) {
-                    x.visible = false
-                    this.freeIndexes.push(i)
+                    this.pool.save(x)
                 }
             }
         }
     }
 
-    private freeIndexes: number[] = []
-
     setEffect(x: number, y: number) {
-        let i = this.freeIndexes.pop()
-        if (i === undefined) {
-            i = this.children.length
-            const eff = new InfoEffect(this.info, this.textures)
-            eff.scale.set(this.initScale)
-            this.addChild(eff)
-        }
-        const e = this.children[i] as InfoEffect
+        const e = this.pool.get()
         e.setPosition(x, y)
         e.resetAnim()
         e.visible = true
     }
 
     setTrackedEffect(tracker: () => { x: number, y: number, visible: boolean }) {
-        let i = this.freeIndexes.pop()
-        if (i === undefined) {
-            i = this.children.length
-            const eff = new InfoEffect(this.info, this.textures)
-            eff.scale.set(this.initScale)
-            this.addChild(eff)
-        }
-        const e = this.children[i] as InfoEffect
+        const e = this.pool.get()
 
         const pupdate = e.update
         e.update = dt => {
@@ -108,7 +101,7 @@ export class EffectLayer extends Container {
 
         const slides = new Set<Slide>()
 
-        state.onJudge.add((remove, n) => {
+        state.on.judge.add((remove, n) => {
             if (n.judge === "miss") {
                 if ("parent" in n) {
                     slides.delete(n.parent)
@@ -128,7 +121,7 @@ export class EffectLayer extends Container {
                     slides.add(n.parent)
                     slide.setTrackedEffect(() => {
                         const p = n.parent
-                        const mt = state.onMusicTimeUpdate.prevArgs[0].visualTime
+                        const mt = state.on.musicTimeUpdate.prevArgs[0].visualTime
                         const visible = p.nextJudgeIndex! < p.notes.length
                             && slides.has(p) && findex(p.notes, -1).time >= mt
                         return {
@@ -142,12 +135,12 @@ export class EffectLayer extends Container {
             }
         })
 
-        state.onEmptyTap.add((remove, l) => {
+        state.on.emptyTap.add((remove, l) => {
             if (0 <= l && l <= 6)
                 tap.setEffect(LaneCenterXs[l], LaneBottomY)
         })
 
-        state.onFullCombo.add(() => {
+        state.on.fullCombo.add(() => {
             fullcombo.setEffect(LayerWidth / 2, LayerHeight / 2)
         })
 

@@ -1,10 +1,10 @@
 import { Container, Sprite, Texture } from "pixi.js"
 import { injectable } from "inversify"
-import { SpriteInfo } from "../Common/InfoType"
+import { SpriteInfo } from "../Common/InfoObject/InfoType"
 import { GameState } from "../Core/GameState"
 import { GameConfig } from "../Core/GameConfig"
 import { Resources, GlobalEvents } from "../Utils/SymbolClasses"
-import { InfoSprite } from "../Common/InfoSprite"
+import { InfoSprite } from "../Common/InfoObject/InfoSprite"
 import { FixRatioContainer } from "../Common/FixRatioContainer"
 import { LayerHeight, LayerWidth } from "../Core/Constants"
 
@@ -58,20 +58,20 @@ export class PauseLayer extends Container {
 
         continuebtn.interactive = true
         //        continuebtn.buttonMode = true
-        continuebtn.on("pointertap", () => {
-            state.onContinue.emit()
+        continuebtn.once("pointertap", () => {
+            state.on.continue.emit()
         })
 
         restart.interactive = true
         //        restart.buttonMode = true
-        restart.on("pointertap", () => {
-            state.onRestart.emit()
+        restart.once("pointertap", () => {
+            state.on.restart.emit()
         })
 
         back.interactive = true
         //        back.buttonMode = true
-        back.on("pointertap", () => {
-            state.onAbort.emit()
+        back.once("pointertap", () => {
+            state.on.abort.emit()
         })
 
         container.addChild(continuebtn, restart, back)

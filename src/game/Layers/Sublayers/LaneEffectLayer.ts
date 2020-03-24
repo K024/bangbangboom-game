@@ -1,7 +1,7 @@
 import { Container, Sprite, Texture } from "pixi.js"
 import { injectable } from "inversify"
 import { Resources, GlobalEvents } from "../../Utils/SymbolClasses"
-import { AnimationManager, CreatePixiTargetPropMapper } from "../../Common/Animation"
+import { AnimationManager, CreatePixiPropSetter } from "../../Common/Animation/Animation"
 import { LaneBottomY, LaneCenterXs } from "../../Core/Constants"
 import { GameState } from "../../Core/GameState"
 import { GameConfig } from "../../Core/GameConfig"
@@ -9,7 +9,7 @@ import { GameConfig } from "../../Core/GameConfig"
 export class LaneEffect extends Sprite {
     constructor(texture: Texture, flip = false) {
         super(texture)
-        this.anim.targetPropMapper = CreatePixiTargetPropMapper(this)
+        this.anim.propSetter = CreatePixiPropSetter(this)
         this.anim.animations.set("scalex", {
             keyframes: [{ time: 0, value: flip ? -1 : 1, type: "bezier", ctrl: [1, 0, 1, 1] },
             { time: 0.25, value: flip ? -0.4 : 0.4, type: "static" }],
@@ -72,12 +72,12 @@ export class LaneEffectLayer extends Container {
             }
         })
 
-        state.onJudge.add((remove, n) => {
+        state.on.judge.add((remove, n) => {
             if (n.judge !== "miss")
                 effects[n.lane].setAnim()
         })
 
-        state.onEmptyTap.add((remove, l) => {
+        state.on.emptyTap.add((remove, l) => {
             effects[l].setAnim()
         })
 

@@ -1,4 +1,5 @@
 import { Sprite, Container, Texture, ObservablePoint } from "pixi.js"
+import { ObjectPool } from "../Utils/Utils"
 
 class DigitSprite extends Sprite {
     constructor(public num: number, texture?: Texture) {
@@ -7,10 +8,12 @@ class DigitSprite extends Sprite {
     }
 }
 
+const charCodeZero = '0'.charCodeAt(0)
+
 class NumberContentSprite extends Container {
 
     private tex: Texture[] = []
-    private spritepool: DigitSprite[][] = []
+    private spritepool: ObjectPool<DigitSprite>[] = []
 
     charWidth = 0
     charHeight = 0
@@ -20,6 +23,9 @@ class NumberContentSprite extends Container {
         this.tex = numberTextures
         this.charWidth = Math.max(...numberTextures.map(x => x.width))
         this.charHeight = Math.max(...numberTextures.map(x => x.height))
+        for (let i = 0; i < 10; i++) {
+            this.spritepool[i] = new ObjectPool(() => new DigitSprite(i, this.tex[i]))
+        }
     }
 
     tint = 0xffffff
@@ -28,45 +34,23 @@ class NumberContentSprite extends Container {
     padding = 4
 
     setValue(num: number) {
-        const digits = num.toFixed().split("").map(x => parseInt(x))
+        const digits = num.toFixed().split("").map(x => x.charCodeAt(0) - charCodeZero)
         const scale = this.fontSize / this.charHeight
         const dx = this.charWidth * scale + this.padding
         const offx = this.charWidth * scale / 2
         const offy = this.charHeight * scale / 2
         for (const x of this.children) {
-            this.saveDigit(x as DigitSprite)
+            this.spritepool[(x as DigitSprite).num].save(x as DigitSprite)
         }
         this.removeChildren()
         for (let i = 0; i < digits.length; i++) {
             const x = digits[i]
-            const s = this.getDigit(x)
+            const s = this.spritepool[x].get()
             s.position.set(offx + dx * i, offy)
             s.scale.set(scale)
             s.tint = this.tint
             this.addChild(s)
         }
-    }
-
-    private getDigit(x: number) {
-        let pool = this.spritepool[x]
-        if (pool === undefined) {
-            pool = []
-            this.spritepool[x] = pool
-        }
-        if (pool.length <= 0) {
-            pool.push(new DigitSprite(x, this.tex[x]))
-        }
-        return pool.pop()!
-    }
-
-    private saveDigit(s: DigitSprite) {
-        const x = s.num
-        let pool = this.spritepool[x]
-        if (pool === undefined) {
-            pool = []
-            this.spritepool[x] = pool
-        }
-        pool.push(s)
     }
 }
 

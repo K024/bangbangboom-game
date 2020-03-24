@@ -1,5 +1,5 @@
-import { ParticleOption } from "./ParticleEmitter"
-import { Animation } from "../Common/Animation"
+import { ParticleOption } from "../ParticleEmitter"
+import { Animation } from "../Animation/Animation"
 import { Sprite } from "pixi.js"
 
 export type PositionInfo = {
@@ -35,7 +35,7 @@ export type NumberSpriteInfo = {
     fontSize?: number
     fontPadding?: number
     position: PositionInfo
-    animations: {
+    animations?: {
         [propName: string]: Animation
     }
     children?: SpriteInfo[]

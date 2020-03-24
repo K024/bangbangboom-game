@@ -4,7 +4,7 @@ import { ReadyLayer } from "../Layers/ReadyLayer"
 import { GameScene } from "./GameScene"
 import { GlobalEvents } from "../Utils/SymbolClasses"
 import { GameConfig } from "../Core/GameConfig"
-import { SceneSwitcher } from "../Utils/SceneSwitcher"
+import { SceneSwitcher } from "./SceneSwitcher"
 
 
 @injectable()
@@ -18,9 +18,9 @@ export class ReadyScene extends Container {
             else config.autoplay = false
 
             const game = ioc.resolve(GameScene)
-            swicher.switch(this, game).outEnd.add(() => {
+            swicher.switch(this, game).outEnd.add((remove) => {
                 this.destroy({ children: true })
-                return "remove"
+                return remove()
             })
         }
 

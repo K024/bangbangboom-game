@@ -11,7 +11,7 @@ import { MusciManager } from "../Core/MusicManager"
 import { SoundManager } from "../Core/SoundManager"
 import { PauseLayer } from "../Layers/PauseLayer"
 import { FinishScene } from "./FinishScene"
-import { SceneSwitcher } from "../Utils/SceneSwitcher"
+import { SceneSwitcher } from "./SceneSwitcher"
 import { ReadyScene } from "./ReadyScene"
 
 @injectable()
@@ -19,9 +19,10 @@ export class GameScene extends Container {
     constructor(ioc: IOC, config: GameConfig, stage: MainStage, events: GlobalEvents, switcher: SceneSwitcher) {
         super()
 
-        if (ioc.isBound(NoteHelper)) ioc.unbind(NoteHelper)
+        ioc = ioc.createChild()
+        ioc.bind(IOC).toConstantValue(ioc)
+
         ioc.bind(NoteHelper).toConstantValue(ioc.resolve(NoteHelper))
-        if (ioc.isBound(GameState)) ioc.unbind(GameState)
         const state = ioc.resolve(GameState)
         ioc.bind(GameState).toConstantValue(state)
 
@@ -38,32 +39,33 @@ export class GameScene extends Container {
 
         let pauseLayer: Container
 
-        state.onPause.add(() => {
+        state.on.pause.add(() => {
             pauseLayer = ioc.resolve(PauseLayer)
             this.addChild(pauseLayer)
         })
 
-        state.onContinue.add(() => {
+        state.on.continue.add(() => {
             this.removeChild(pauseLayer)
+            pauseLayer.destroy({ children: true })
         })
 
-        state.onEnd.add(() => {
+        state.on.end.add(() => {
             const finish = ioc.resolve(FinishScene)
-            switcher.switch(this, finish).outEnd.add(() => {
+            switcher.switch(this, finish).outEnd.add((remove) => {
                 this.destroy({ children: true })
-                return "remove"
+                remove()
             })
         })
 
-        state.onRestart.add(() => {
+        state.on.restart.add(() => {
             const ready = ioc.resolve(ReadyScene)
-            switcher.switch(this, ready).outEnd.add(() => {
+            switcher.switch(this, ready).outEnd.add((remove) => {
                 this.destroy({ children: true })
-                return "remove"
+                remove()
             })
         })
 
-        state.onAbort.add(() => {
+        state.on.abort.add(() => {
             events.End.emit()
         })
     }

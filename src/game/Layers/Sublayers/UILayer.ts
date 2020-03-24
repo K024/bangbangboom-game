@@ -2,10 +2,10 @@ import { Container } from "pixi.js"
 import { injectable } from "inversify"
 import { GameState } from "../../Core/GameState"
 import { GameConfig } from "../../Core/GameConfig"
-import { SpriteInfo, NumberSpriteInfo } from "../../Common/InfoType"
-import { InfoSprite } from "../../Common/InfoSprite"
+import { SpriteInfo, NumberSpriteInfo } from "../../Common/InfoObject/InfoType"
+import { InfoSprite } from "../../Common/InfoObject/InfoSprite"
 import { Resources, GlobalEvents } from "../../Utils/SymbolClasses"
-import { InfoNumberSprite } from "../../Common/InfoNumberSprite"
+import { InfoNumberSprite } from "../../Common/InfoObject/InfoNumberSprite"
 
 
 type UILayerInfo = {
@@ -45,13 +45,14 @@ export class UILayer extends Container {
         pause.interactive = true
         //        pause.buttonMode = true
         pause.on("pointertap", () => {
-            state.onPause.emit()
+            if (!state.paused)
+                state.on.pause.emit()
         })
 
         score.setValue(0)
         combo.visible = false
 
-        state.onJudge.add((remove, note) => {
+        state.on.judge.add((remove, note) => {
             if (!this.parent) return remove()
             judge.texture = textures![note.judge!]
             judge.resetAnim()

@@ -3,7 +3,7 @@ import { setItems } from "../../core/Utils"
 
 type Listener<Args extends any[]> = (remove: () => void, ...args: Args) => any
 
-export class GameEvent<Args extends any[]> {
+export class GameEvent<Args extends any[] = any[]> {
 
     private listeners = new Set<Listener<Args>>()
     prevArgs: Args = null as any as Args
@@ -16,7 +16,6 @@ export class GameEvent<Args extends any[]> {
         this.prevArgs = args
     }
 
-    /** a listener returns "remove" to remove itself from this event */
     add(listener: Listener<Args>) {
         this.listeners.add(listener)
     }

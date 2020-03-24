@@ -61,6 +61,17 @@ export class JudgeManager extends AbsctractJudgeManager {
             start: PointerEventInfo
         }>()
 
+        state.on.judge.add((remove, note) => {
+            if (state.ended) remove()
+            if (note.judge && note.judge !== "bad") {
+                if (note.type === "flick" || note.type === "flickend") {
+                    state.on.soundEffect.emit("flick", 0)
+                } else {
+                    state.on.soundEffect.emit(note.judge, 0)
+                }
+            }
+        })
+
         // --------------------------------------- Interval Judges ---------------------------------------
 
         let nextJudgeIndex = 0
@@ -105,7 +116,7 @@ export class JudgeManager extends AbsctractJudgeManager {
                         x.pointerId = undefined
                     }
 
-                    state.onJudge.emit(x)
+                    state.on.judge.emit(x)
                     judgedNotes.add(x)
                 }
             }
@@ -126,7 +137,7 @@ export class JudgeManager extends AbsctractJudgeManager {
                         if (Math.abs(findex(info.track, -1).lane - s.lane) <= 1) { // todo: care about this
                             s.judge = j
                             p.nextJudgeIndex!++
-                            state.onJudge.emit(s)
+                            state.on.judge.emit(s)
                             judgedNotes.add(s)
                         }
                     }
@@ -149,7 +160,7 @@ export class JudgeManager extends AbsctractJudgeManager {
                         x.note.parent.nextJudgeIndex!++
                     }
                     holdingFlicks.delete(x.start.pointerId)
-                    state.onJudge.emit(x.note)
+                    state.on.judge.emit(x.note)
                     judgedNotes.add(x.note)
                 }
             }
@@ -183,7 +194,7 @@ export class JudgeManager extends AbsctractJudgeManager {
                         if (last.judge) continue
                         last.judge = "miss"
                         x.parent.nextJudgeIndex = index
-                        state.onJudge.emit(last)
+                        state.on.judge.emit(last)
                         judgedNotes.add(last)
                     }
                 }
@@ -201,7 +212,7 @@ export class JudgeManager extends AbsctractJudgeManager {
 
         // --------------------------------------- Pointer Events ---------------------------------------
 
-        state.onPointer.add((remove, pointer) => {
+        state.on.pointer.add((remove, pointer) => {
             if (state.ended) return remove()
             if (state.paused) return
 
@@ -259,7 +270,7 @@ export class JudgeManager extends AbsctractJudgeManager {
                                 n.parent.pointerId = undefined
                             }
 
-                            state.onJudge.emit(n)
+                            state.on.judge.emit(n)
                             judgedNotes.add(n)
                         } else {
                             holdingFlicks.set(pointer.pointerId, {
@@ -281,7 +292,7 @@ export class JudgeManager extends AbsctractJudgeManager {
                             f.note.parent.nextJudgeIndex!++
                         }
                         judgedNotes.add(f.note)
-                        state.onJudge.emit(f.note)
+                        state.on.judge.emit(f.note)
                     } else if (s) {
                         const n = s.slide.notes[s.slide.nextJudgeIndex!]
                         if (n) {
@@ -295,7 +306,7 @@ export class JudgeManager extends AbsctractJudgeManager {
                                 n.judge = j
                             }
                             judgedNotes.add(n)
-                            state.onJudge.emit(n)
+                            state.on.judge.emit(n)
                         }
                     }
                     holdingSlides.delete(pointer.pointerId)
@@ -317,7 +328,7 @@ export class JudgeManager extends AbsctractJudgeManager {
                                 }
                                 f.note.judge = j
                                 judgedNotes.add(f.note)
-                                state.onJudge.emit(f.note)
+                                state.on.judge.emit(f.note)
                                 holdingSlides.delete(pointer.pointerId)
                                 holdingFlicks.delete(pointer.pointerId)
                             }
@@ -334,7 +345,7 @@ export class JudgeManager extends AbsctractJudgeManager {
 
             if (pointer.type === "down" && !downHandled) {
                 if (pointer.lane !== -1)
-                    state.onEmptyTap.emit(pointer.lane)
+                    state.on.emptyTap.emit(pointer.lane)
             }
 
         })

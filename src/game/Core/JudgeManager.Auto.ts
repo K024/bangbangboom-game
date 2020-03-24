@@ -8,20 +8,19 @@ export class AutoJudgeManager extends AbsctractJudgeManager {
         super()
 
         let nextJudgeIndex = 0
+        let nextSoundIndex = 0
 
         const list = state.map.notes
-
-        let timeoutOffset = 0
 
         const animloop = () => {
             if (state.ended) return
             requestAnimationFrame(animloop)
             if (state.paused) return
 
-            const time = state.GetMusicTime() + 0.05
-            let i = nextJudgeIndex
+            const time = state.GetMusicTime()
 
-            while (i < list.length && list[i].time < time) {
+            let i = nextJudgeIndex
+            while (i < list.length && list[i].time <= time) {
                 const note = list[i]
                 note.judge = "perfect"
                 if (note.type === "slidestart") {
@@ -32,14 +31,20 @@ export class AutoJudgeManager extends AbsctractJudgeManager {
                 } else if (note.type === "slideend" || note.type === "flickend") {
                     note.parent.pointerId = 0
                 }
-                setTimeout(() => {
-                    state.onJudge.emit(note)
-                    const offset = state.GetMusicTime() - note.time
-                    timeoutOffset = timeoutOffset * 0.9 + offset * 0.01
-                }, time - note.time - timeoutOffset)
+                state.on.judge.emit(note)
                 i++
             }
             nextJudgeIndex = i
+
+            i = nextSoundIndex
+            while (i < list.length && list[i].time < time + 0.04) {
+                const note = list[i]
+                const type = note.type === "flick" || note.type === "flickend" ? "flick" : "perfect"
+                state.on.soundEffect.emit(type, note.time - time)
+                i++
+            }
+            nextSoundIndex = i
+
         }
 
         requestAnimationFrame(animloop)

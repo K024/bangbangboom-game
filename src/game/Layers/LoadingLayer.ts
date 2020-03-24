@@ -2,10 +2,10 @@ import { FixRatioContainer } from "../Common/FixRatioContainer"
 import { injectable } from "inversify"
 import { LayerWidth, LayerHeight } from "../Core/Constants"
 import { Text, Container, TilingSprite, Texture, Graphics } from "pixi.js"
-import { LoadingBackground as LoadingBackground, LoadingMessages } from "../Common/InCodeAssests"
+import { LoadingBackground as LoadingBackground, LoadingMessages } from "../Utils/InCodeAssests"
 import { GlobalEvents } from "../Utils/SymbolClasses"
-import { AnimationManager, CreatePixiTargetPropMapper, createSimpleAnimation, keyFramePresets } from "../Common/Animation"
-import { GameEvent } from "../Utils/GameEvent"
+import { AnimationManager, CreatePixiPropSetter, createSimpleAnimation, keyFramePresets } from "../Common/Animation/Animation"
+import { GameEvent } from "../Common/GameEvent"
 import { GameLoadConfig } from "../Core/GameConfig"
 
 class LoadProgress {
@@ -120,7 +120,7 @@ export class LoadingLayer extends Container {
 
         let timeout = 5
 
-        const textanim = new AnimationManager(CreatePixiTargetPropMapper(text))
+        const textanim = new AnimationManager(CreatePixiPropSetter(text))
         textanim.paused = true
 
         const anim1 = createSimpleAnimation(1, 0, 0.3, keyFramePresets.easeOut)
@@ -135,19 +135,19 @@ export class LoadingLayer extends Container {
         }
         const anim3 = createSimpleAnimation(0, 1, 0.3, keyFramePresets.easeOut)
         const anim4 = createSimpleAnimation(text.x + 20, text.x, 0.3, keyFramePresets.easeOut)
-        const changeText2 = () => {
+        const changeText2 = (remove: () => void) => {
             text.text = this.getRandomMessage(text.text)
             textanim.currentTime = 0
             textanim.animations.set("alpha", anim3)
             textanim.animations.set("x", anim4)
-            textanim.onEnd.add(() => {
+            textanim.onEnd.add((remove) => {
                 textanim.paused = true
                 textanim.currentTime = 0
 
                 timeout = 5
-                return "remove"
+                return remove()
             })
-            return "remove"
+            return remove()
         }
 
         update.add((remove, dt) => {

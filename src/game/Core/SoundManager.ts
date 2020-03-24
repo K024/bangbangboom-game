@@ -2,59 +2,58 @@ import { injectable } from "inversify"
 import { Resources, GlobalEvents } from "../Utils/SymbolClasses"
 import { GameState } from "./GameState"
 import { GameConfig } from "./GameConfig"
+import { AudioSource, AudioInstance } from "../Common/AudioCtx"
+import { setItems } from "../../core/Utils"
 
 @injectable()
 export class SoundManager {
     constructor(resources: Resources, private state: GameState, config: GameConfig, events: GlobalEvents) {
-        const sounds = {
+        const sounds: { [k: string]: AudioSource } = {
             perfect: resources.perfect.data,
             great: resources.great.data,
             good: resources.good.data,
             flick: resources.flick.data,
-            long: resources.long.data,
             button: resources.button.data
         }
 
-        // const lastTime: { [prop: string]: number } = {}
-        const play = (s: keyof typeof sounds) => {
-            // const now = performance.now()
-            // if (lastTime[s] && now - lastTime[s] < 10) return
-            // lastTime[s] = now
-            sounds[s].play()
-        }
-
         for (const prop in sounds) {
-            sounds[(prop as keyof typeof sounds)].volume(config.effectVolume)
+            sounds[(prop as keyof typeof sounds)].volume = config.effectVolume
         }
 
-        state.onJudge.add((remove, note) => {
+        const toStop = new Set<AudioInstance>()
+
+        const play = (s: keyof typeof sounds, delay: number) => {
+            const au = new AudioInstance(sounds[s])
+            if (!au) {
+                console.warn("No such sound named " + s)
+                return
+            }
+            au.onend.add(() => toStop.delete(au))
+            au.play(delay)
+            toStop.add(au)
+        }
+
+        state.on.soundEffect.add((remove, type, delay) => {
             if (state.ended) return remove()
 
-            if (note.judge === "miss") {
-                if (note.type !== "single" && note.type !== "flick") {
-                    //
-                }
-            } else if (note.judge !== "bad") {
-                if (note.type === "flick" || note.type === "flickend") {
-                    play("flick")
-                } else {
-                    play(note.judge as "perfect" | "great" | "good")
-                }
-            }
+            play(type, delay)
         })
 
-        state.onEmptyTap.add((remove) => {
+        const clear = () => {
+            const list = setItems(toStop)
+            for (const au of list) au.stop()
+            toStop.clear()
+        }
+
+        state.on.pause.add(clear)
+
+        state.on.emptyTap.add((remove) => {
             if (state.ended) return remove()
 
-            play("button")
+            play("button", 0)
         })
 
-        events.End.add(() => {
-
-            for (const prop in sounds) {
-                sounds[(prop as keyof typeof sounds)].unload()
-            }
-        })
+        events.End.add(clear)
     }
 }
 

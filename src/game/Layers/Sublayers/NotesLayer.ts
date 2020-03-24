@@ -9,41 +9,39 @@ import { FlickNoteSprite } from "../Components/FlickNoteSprite"
 import { SlideNoteSprite } from "../Components/SlideNoteSprite"
 import { SlideAmongSprite } from "../Components/SlideAmongSprite"
 import { GameConfig } from "../../Core/GameConfig"
+import { ObjectPool } from "../../Utils/Utils"
 
 @injectable()
 class BarLayer extends Container {
     constructor(private state: GameState, private helper: NoteHelper, private ioc: IOC) {
         super()
         this.sortableChildren = true
+        this.pool.newObj = () => {
+            const b = this.ioc.resolve(SlideBarSprite)
+            this.addChild(b)
+            return b
+        }
     }
 
     private nextBarIndex = 0
-
-    private pool: SlideBarSprite[] = []
-    private freeIndexes: number[] = []
+    
+    private pool = new ObjectPool<SlideBarSprite>()
 
     update(musicTime: number, showTime: number) {
         let index = this.nextBarIndex
         const list = this.state.map.bars
         while (index < list.length && list[index].start.time < showTime) {
-            let i = this.freeIndexes.pop()
-            if (i === undefined) {
-                i = this.pool.length
-                const b = this.ioc.resolve(SlideBarSprite)
-                this.addChild(b)
-                this.pool.push(b)
-            }
-            const bar = this.pool[i]
+            const bar = this.pool.get()
             bar.applyInfo(list[index])
             index++
         }
         this.nextBarIndex = index
-        for (let i = 0; i < this.pool.length; i++) {
-            const x = this.pool[i]
+        for (let i = 0; i < this.children.length; i++) {
+            const x = this.children[i] as SlideBarSprite
             x.update(musicTime)
             if (x.shouldRemove) {
                 x.shouldRemove = false
-                this.freeIndexes.push(i)
+                this.pool.save(x)
             }
         }
 
@@ -55,36 +53,33 @@ class SimLineLayer extends Container {
     constructor(private config: GameConfig, private state: GameState, private ioc: IOC) {
         super()
         this.sortableChildren = true
+        this.pool.newObj = () => {
+            const s = this.ioc.resolve(SimLineSprite)
+            this.addChild(s)
+            return s
+        }
     }
 
     private nextSimIndex = 0
-
-    private pool: SimLineSprite[] = []
-    private freeIndexes: number[] = []
+    
+    private pool = new ObjectPool<SimLineSprite>()
 
     update(musicTime: number, showTime: number) {
         if (this.config.showSimLine) {
             let index = this.nextSimIndex
             const list = this.state.map.simlines
             while (index < list.length && list[index].left.time < showTime) {
-                let i = this.freeIndexes.pop()
-                if (i === undefined) {
-                    i = this.pool.length
-                    const s = this.ioc.resolve(SimLineSprite)
-                    this.addChild(s)
-                    this.pool.push(s)
-                }
-                const sim = this.pool[i]
+                const sim = this.pool.get()
                 sim.applyInfo(list[index])
                 index++
             }
             this.nextSimIndex = index
-            for (let i = 0; i < this.pool.length; i++) {
-                const x = this.pool[i]
+            for (let i = 0; i < this.children.length; i++) {
+                const x = this.children[i] as SimLineSprite
                 x.update(musicTime)
                 if (x.shouldRemove) {
                     x.shouldRemove = false
-                    this.freeIndexes.push(i)
+                    this.pool.save(x)
                 }
             }
         }
@@ -105,39 +100,36 @@ class NoteLayer extends Container {
     constructor(private state: GameState, private ioc: IOC) {
         super()
         this.sortableChildren = true
-        this.freeIndexes = {}
-        for (const key in spritemap)
-            this.freeIndexes[key] = []
+        for (const key in spritemap){
+            this.pool[key] = new ObjectPool()
+            this.pool[key].newObj = () => {
+                const type = (spritemap as any)[key]
+                const n = this.ioc.resolve(type) as noteSprite
+                this.addChild(n)
+            }
+        }
     }
 
     private nextNoteIndex = 0
 
-    private pool: noteSprite[] = []
-    private freeIndexes: { [key: string]: number[] }
+    private pool: { [key: string]: ObjectPool<any> } = {}
 
     update(musicTime: number, showTime: number) {
         let index = this.nextNoteIndex
         const list = this.state.map.notes
         while (index < list.length && list[index].time < showTime) {
             const info = list[index]
-            let i = this.freeIndexes[info.type].pop()
-            if (i === undefined) {
-                i = this.pool.length
-                const n = this.ioc.resolve(spritemap[info.type] as any) as any
-                this.addChild(n)
-                this.pool.push(n)
-            }
-            const note = this.pool[i]
+            const note = this.pool[info.type].get() as noteSprite
             note.applyInfo(info as any)
             index++
         }
         this.nextNoteIndex = index
-        for (let i = 0; i < this.pool.length; i++) {
-            const x = this.pool[i]
+        for (let i = 0; i < this.children.length; i++) {
+            const x = this.children[i] as noteSprite
             x.update(musicTime)
             if (x.shouldRemove) {
                 x.shouldRemove = false
-                this.freeIndexes[x.note!.type].push(i)
+                this.pool[x.note!.type].save(x)
             }
         }
     }
@@ -150,7 +142,7 @@ export class NotesLayer extends Container {
     constructor(private state: GameState, ioc: IOC, private helper: NoteHelper, private config: GameConfig) {
         super()
 
-        state.onMusicTimeUpdate.add(this.update)
+        state.on.musicTimeUpdate.add(this.update)
 
         this.barLayer = ioc.resolve(BarLayer)
         this.noteLayer = ioc.resolve(NoteLayer)

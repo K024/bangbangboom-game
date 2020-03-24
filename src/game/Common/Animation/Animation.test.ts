@@ -1,4 +1,4 @@
-import { Animation, AnimationManager, CreatePixiTargetPropMapper } from "./Animation"
+import { Animation, AnimationManager, CreatePixiPropSetter } from "./Animation"
 import { Application, Sprite } from "pixi.js"
 
 const testanim: Animation = {
@@ -32,11 +32,11 @@ export class TestApp extends Application {
     loaded = () => {
         const manager = new AnimationManager()
         const sprite = new Sprite(this.loader.resources.effect.textures?.note_double)
-        const mapper = CreatePixiTargetPropMapper(sprite)
-        mapper("r", 0xFF)
-        mapper("g", 0x00)
-        mapper("b", 0x88)
-        manager.targetPropMapper = mapper
+        const mapper = CreatePixiPropSetter(sprite)
+        mapper.r(0xFF)
+        mapper.g(0x00)
+        mapper.b(0x88)
+        manager.propSetter = mapper
         manager.animations.set("x", testanim)
         manager.animations.set("y", testanim)
         this.ticker.add(() => manager.update(this.ticker.deltaMS / 1000))

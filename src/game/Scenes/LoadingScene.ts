@@ -1,4 +1,3 @@
-import { Howl } from "howler"
 import { Container, Loader, LoaderResource } from 'pixi.js'
 import { Container as IOC, injectable } from 'inversify'
 import { GameLoadConfig, jsonNames, soundNames } from '../Core/GameConfig'
@@ -6,8 +5,9 @@ import { Resources, MainStage } from "../Utils/SymbolClasses"
 import { LoadingLayer } from "../Layers/LoadingLayer"
 import { BackgroundLayer } from "../Layers/BackgroundLayer"
 import { ReadyScene } from "./ReadyScene"
-import { SceneSwitcher } from "../Utils/SceneSwitcher"
+import { SceneSwitcher } from "./SceneSwitcher"
 import { RawMap } from "../../core/Map"
+import { AudioSource } from '../Common/AudioCtx'
 
 function howlerMiddleware(resource: LoaderResource, next: () => void) {
     if (resource.loadType !== LoaderResource.LOAD_TYPE.AUDIO) {
@@ -15,20 +15,21 @@ function howlerMiddleware(resource: LoaderResource, next: () => void) {
         return
     }
 
-    const howl = new Howl({
-        src: resource.url,
-        format: /\..{1,5}$/.test(resource.url) ? undefined : "mp3",
-        onload: () => {
-            resource.data = howl
-            resource.complete()
-            next()
-        },
-        onloaderror: (id, err) => {
-            resource.error = err
-            resource.abort("load error")
-            next()
-        }
+    const audioSource = AudioSource.from(fetch(resource.url).then(res => res.blob()))
+
+    audioSource.onload.add((remove) => {
+        resource.data = audioSource
+        resource.complete()
+        next()
+        remove()
     })
+    audioSource.onloaderr.add((reomve, err) => {
+        resource.error = err
+        resource.abort("load error")
+        next()
+        reomve()
+    })
+    audioSource.load()
 }
 
 const mapContentLoadConfig = {
@@ -117,9 +118,9 @@ export class LoadingScene extends Container {
         const ready = this.ioc.resolve(ReadyScene)
 
         const swicher = this.ioc.get(SceneSwitcher)
-        swicher.switch(this, ready).outEnd.add(() => {
+        swicher.switch(this, ready).outEnd.add((remove) => {
             this.destroy({ children: true })
-            return "remove"
+            return remove()
         })
     }
 

@@ -1,5 +1,5 @@
-import { setByte } from '../Utils/Utils'
-import { GameEvent } from '../Utils/GameEvent'
+import { setByte, ObjectPool } from '../Utils/Utils'
+import { GameEvent } from './GameEvent'
 import { Sprite, Texture, BLEND_MODES, Container } from 'pixi.js'
 
 type RangeNumber = {
@@ -14,7 +14,7 @@ function getRangeValue(n?: RangeNumber) {
     if (n === undefined) return undefined
     if (typeof n === "number") return n
     if (n instanceof Array)
-        return n[Math.floor(Math.random() * n.length)]
+        return n[(Math.random() * n.length) | 0]
     if ("max" in n) return n.min + Math.random() * (n.max - n.min)
     return n.base + (Math.random() * 2 - 1) * n.offset
 }
@@ -81,7 +81,7 @@ export class Particle extends Sprite {
     start: ParticleProperties = {}
     end: ParticleProperties = {}
 
-    constructor(texture: Texture) {
+    constructor(texture?: Texture) {
         super(texture)
         this.anchor.set(0.5)
     }
@@ -180,27 +180,33 @@ export class Particle extends Sprite {
 
 export class ParticleEmitter extends Container {
 
-    private freeIndexes: number[] = []
+    private poor = new ObjectPool<Particle>()
+    private textures: (Texture | undefined)[]
 
-    constructor(private textures: (Texture | undefined)[], public option: ParticleOption) {
+    constructor(textures: (Texture | undefined)[] | null, public option: ParticleOption) {
         super()
+        this.textures = textures || []
+        this.poor.newObj = () => {
+            const p = new Particle(this.textures[0])
+            this.addChild(p)
+            return p
+        }
+        this.poor.beforeGet = p => {
+            p.visible = true
+            p.setOption(this.option, this.offset)
+            p.currentTime = 0
+            const i = (Math.random() * this.textures.length) | 0
+            p.texture = this.textures[i]!
+        }
+        this.poor.beforeSave = p => {
+            p.shouldRemove = false
+            p.visible = false
+        }
     }
 
     offset = { x: 0, y: 0 }
-
-    private useParticle(index: number) {
-        const x = this.children[index] as Particle
-        x.visible = true
-        x.setOption(this.option, this.offset)
-        x.currentTime = 0
-        const i = (Math.random() * this.textures.length) | 0
-        x.texture = this.textures[i]!
-        return x
-    }
-
     canEmit = true
 
-    private destroyed = false
     currentTime = 0
     private counter = 0
     /**
@@ -209,7 +215,7 @@ export class ParticleEmitter extends Container {
      */
     update(dt: number) {
         this.currentTime += dt
-        if (this.destroyed || this.currentTime < 0) return
+        if (this._destroyed || this.currentTime < 0) return
         if (this.currentTime - dt < 0) this.currentTime = 0
 
         if (this.canEmit && (this.option.duration <= 0 || this.currentTime - dt < this.option.duration)) {
@@ -217,12 +223,7 @@ export class ParticleEmitter extends Container {
             this.counter += time * this.option.emissionRate
             while (this.counter > 1) {
                 this.counter -= 1
-                if (this.freeIndexes.length <= 0) {
-                    this.addChild(new Particle(this.textures[0]!))
-                    this.freeIndexes.push(this.children.length - 1)
-                }
-                const i = this.freeIndexes.pop()!
-                this.useParticle(i)
+                this.poor.get()
             }
         }
 
@@ -232,11 +233,9 @@ export class ParticleEmitter extends Container {
             if (!p.visible) continue
             p.update(dt)
 
-            if (p.shouldRemove) {
-                p.shouldRemove = false
-                p.visible = false
-                this.freeIndexes.push(i)
-            } else
+            if (p.shouldRemove)
+                this.poor.save(p)
+            else
                 visibleCount++
         }
 
@@ -258,9 +257,4 @@ export class ParticleEmitter extends Container {
     emitEnded = false
     onAllEnd = new GameEvent<[]>()
     allEnd = false
-
-    destroy() {
-        this.destroyed = true
-        this.removeChildren()
-    }
 }

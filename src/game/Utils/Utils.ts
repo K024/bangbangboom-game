@@ -21,23 +21,22 @@ export const colorByte = {
 export class ObjectPool<T> {
     private pool: T[] = []
 
-    newObj?: () => T
-    pre?: (o: T) => T
-    after?: (o: T) => T
+    constructor(public newObj?: () => T, public beforeGet?: (o: T) => void | any, public beforeSave?: (o: T) => void | any) {
+    }
 
     get() {
         if (!this.newObj) throw new Error("Can not create new object")
         if (this.pool.length <= 0) {
             this.pool.push(this.newObj())
         }
-        const v = this.pool.pop()
-        if (this.pre) return this.pre(v!)
+        const v = this.pool.pop()!
+        if (this.beforeGet) this.beforeGet(v)
         return v
     }
 
     save(o: T) {
-        if (this.after) this.pool.push(this.after(o))
-        else this.pool.push(o)
+        if (this.beforeSave) this.beforeSave(o)
+        this.pool.push(o)
     }
 
     ensure(n: number) {

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import "reflect-metadata"
-import { EffectInfo } from "../../Common/InfoType"
+import { EffectInfo } from "../../Common/InfoObject/InfoType"
 import { FixRatioContainer } from "../../Common/FixRatioContainer"
 import { LayerWidth, LayerHeight, LaneBottomY, FarLineY, LaneCenterXs, CenterX, LaneInfY, LaneWidth } from "../../Core/Constants"
 import { EffectLayer, SingleEffectLayer } from "./EffectLayer"

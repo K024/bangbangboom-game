@@ -1,6 +1,6 @@
 import { FixRatioContainer } from "../Common/FixRatioContainer"
-import { InfoSprite } from "../Common/InfoSprite"
-import { PositionInfo, SpriteInfo, setPositionInfo } from "../Common/InfoType"
+import { InfoSprite } from "../Common/InfoObject/InfoSprite"
+import { PositionInfo, SpriteInfo, setPositionInfo } from "../Common/InfoObject/InfoType"
 import { TextStyle, Text, } from "pixi.js"
 import { injectable } from "inversify"
 import { LayerWidth, LayerHeight } from "../Core/Constants"

@@ -60,7 +60,7 @@ export class IntereactionLayer extends Container {
                     x: p.x,
                     y: p.y
                 }
-                state.onPointer.emit(ev)
+                state.on.pointer.emit(ev)
 
                 if (config.debug && name.indexOf("move") < 0) console.log(name, ev)
             }))

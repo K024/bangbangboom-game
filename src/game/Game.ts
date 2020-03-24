@@ -1,11 +1,11 @@
 import "reflect-metadata"
-import { Ticker } from "./Utils/Ticker"
+import { Ticker } from "./Common/Ticker"
 import { GameConfig, GameLoadConfig } from "./Core/GameConfig"
 import { Container } from "inversify"
 import { LoadingScene } from "./Scenes/LoadingScene"
 import { GlobalEvents, MainStage } from "./Utils/SymbolClasses"
 import { addAutoListener } from "./Utils/Utils"
-import { SceneSwitcher } from "./Utils/SceneSwitcher"
+import { SceneSwitcher } from "./Scenes/SceneSwitcher"
 import { Renderer, autoDetectRenderer, utils } from "pixi.js"
 
 type Optional<T> = {
@@ -51,20 +51,20 @@ export class Game {
         this.resize()
         this.stage.addChild(this.ioc.resolve(LoadingScene))
 
-        addAutoListener(window, "blur", () => {
-            if (this._destroyed) return "remove"
+        addAutoListener(window, "blur", (remove) => {
+            if (this._destroyed) return remove()
             this.events.WindowBlur.emit()
             this.ticker.Stop()
         })
 
-        addAutoListener(window, "focus", () => {
-            if (this._destroyed) return "remove"
+        addAutoListener(window, "focus", (remove) => {
+            if (this._destroyed) return remove()
             this.ticker.Start()
             this.events.WindowFocus.emit()
         })
 
-        this.events.End.add(() => {
-            if (this._destroyed) return "remove"
+        this.events.End.add((remove) => {
+            if (this._destroyed) return remove()
             this.destroy()
         })
     }
@@ -89,7 +89,7 @@ export class Game {
         this.events.End.emit()
         for (const e in this.events) this.events[e as keyof GlobalEvents].clear()
         this.ioc.unbindAll()
-        this.stage.destroy()
+        this.stage.destroy({children: true})
         this.renderer.clear()
         this.renderer.destroy()
         utils.clearTextureCache()

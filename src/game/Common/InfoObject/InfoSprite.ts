@@ -1,20 +1,14 @@
-import { NumberSprite } from "./NumberSprite"
-import { Texture } from "pixi.js"
-import { setPositionInfo, NumberSpriteInfo } from "./InfoType"
-import { InfoSprite } from "./InfoObject/InfoSprite"
-import { AnimationManager, CreatePixiPropSetter } from "./Animation/Animation"
+import { Sprite, Texture, BLEND_MODES } from "pixi.js"
+import { AnimationManager, CreatePixiPropSetter } from "../Animation/Animation"
+import { SpriteInfo, setPositionInfo } from "./InfoType"
 
-const numberList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(x => x.toString())
-
-export class InfoNumberSprite extends NumberSprite {
-    constructor(info: NumberSpriteInfo, textures: { [name: string]: Texture }) {
-        super(numberList.map(x => textures[x]))
-        if (info.fontSize !== undefined) this.fontSize = info.fontSize
-        if (info.fontTint !== undefined) this.tint = parseInt(info.fontTint.replace("#", "0x"))
-        if (info.fontPadding !== undefined) this.padding = info.fontPadding
-        setPositionInfo(this as any, info.position)
-
+export class InfoSprite extends Sprite {
+    constructor(info: SpriteInfo, textures?: { [name: string]: Texture }) {
+        super((info.texture && textures && textures[info.texture]) || undefined)
         this.animation.propSetter = CreatePixiPropSetter(this)
+
+        if (info.position)
+            setPositionInfo(this, info.position)
 
         if (info.animations instanceof Object) {
             for (const prop in info.animations) {
@@ -29,6 +23,11 @@ export class InfoNumberSprite extends NumberSprite {
                 this.infoSprites.push(c)
             }
         }
+
+        if (info.blend === "add") this.blendMode = BLEND_MODES.ADD
+        if (info.tint !== undefined)
+            this.tint = parseInt(info.tint.replace("#", "0x"))
+
     }
 
     private infoSprites: InfoSprite[] = []
@@ -44,10 +43,10 @@ export class InfoNumberSprite extends NumberSprite {
     }
 
     resetAnim() {
+        this.visible = true
         this.animation.currentTime = 0
-        for (const x of this.infoSprites) {
+        for (const x of this.infoSprites)
             x.resetAnim()
-        }
     }
 
     allAnimEnd(): boolean {
@@ -58,3 +57,4 @@ export class InfoNumberSprite extends NumberSprite {
         return true
     }
 }
+

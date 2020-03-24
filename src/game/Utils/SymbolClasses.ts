@@ -1,4 +1,4 @@
-import { GameEvent } from "./GameEvent"
+import { GameEvent } from "../Common/GameEvent"
 import { LoaderResource, Container, Sprite } from "pixi.js"
 import { injectable } from "inversify"
 import { GameConfig, staytime } from "../Core/GameConfig"

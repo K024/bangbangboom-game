@@ -55,3 +55,5 @@ import { Game } from "bangbangboom-game"
 ```
 
 See detailed definations in [index.d.ts](./types/index.d.ts)
+
+Information about score calculation is at [here](./docs/score.md)

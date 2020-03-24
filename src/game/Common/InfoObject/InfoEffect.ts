@@ -1,8 +1,8 @@
 import { Texture, Container } from "pixi.js"
-import { ParticleEmitter } from "./ParticleEmitter"
+import { ParticleEmitter } from "../ParticleEmitter"
 import { InfoSprite } from "./InfoSprite"
 import { EffectInfo } from "./InfoType"
-import { assert } from "../../core/Utils"
+import { assert } from "../../../core/Utils"
 
 export class InfoEffect extends Container {
     constructor(info: EffectInfo, textures?: { [name: string]: Texture }) {
@@ -10,7 +10,7 @@ export class InfoEffect extends Container {
 
         if (info.particles instanceof Array) {
             for (const x of info.particles) {
-                const p = new ParticleEmitter(x.textures.map(t => textures && textures[t]), x.option)
+                const p = new ParticleEmitter(textures && x.textures.map(t => textures[t]) || [], x.option)
                 p.currentTime = -(x.delay || 0)
                 this.delaymap.set(p, -(x.delay || 0))
                 this.addChild(p)
