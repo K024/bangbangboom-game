@@ -1,15 +1,14 @@
 {
     "compilerOptions": {
         "sourceMap": true,
-        "target": "es5",
-        "module": "es2015",
+        "target": "ES6",
+        "module": "esnext",
         "moduleResolution": "node",
         "lib": [
             "dom",
-            "es2018"
+            "esnext"
         ],
         "types": [
-            "howler",
             "inversify"
         ],
         "noImplicitAny": true,

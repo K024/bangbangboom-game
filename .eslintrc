@@ -1,5 +1,4 @@
 {
-  "root": true,
   "parser": "@typescript-eslint/parser",
   "plugins": [
     "@typescript-eslint"
@@ -18,5 +17,9 @@
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/member-delimiter-style": "off",
     "@typescript-eslint/no-non-null-assertion": "off"
-  }
+  },
+  "ignorePatterns": [
+    "/lib",
+    "/node_modules"
+  ]
 }

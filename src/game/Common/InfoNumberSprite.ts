@@ -1,8 +1,8 @@
 import { NumberSprite } from "./NumberSprite"
 import { Texture } from "pixi.js"
-import { setPositionInfo, NumberSpriteInfo } from "./InfoType"
 import { InfoSprite } from "./InfoObject/InfoSprite"
 import { AnimationManager, CreatePixiPropSetter } from "./Animation/Animation"
+import { NumberSpriteInfo, setPositionInfo } from "./InfoObject/InfoType"
 
 const numberList = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(x => x.toString())
 
