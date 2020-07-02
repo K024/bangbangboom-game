@@ -8,8 +8,7 @@ export default globalctx
 export { MyEvent, AudioSource, AudioInstance, AudioElInstance }
 
 export async function loadFromUrl(url: string) {
-  const res = await fetch(url)
-  const buffer = await res.arrayBuffer()
-  return buffer
+    const res = await fetch(url)
+    const buffer = await res.arrayBuffer()
+    return buffer
 }
-

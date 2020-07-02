@@ -6,7 +6,7 @@ import { JudgePoint } from "../Core/GameMap"
 import { projection } from "../Core/Projection"
 import { LaneCenterXs } from "../Core/Constants"
 
-export class MainStage extends Container { }
+export class MainStage extends Container {}
 
 export class GlobalEvents {
     /** delta, time in seconds */
@@ -44,4 +44,3 @@ export class NoteHelper {
         note.scale.set(scale * this.noteScale)
     }
 }
-

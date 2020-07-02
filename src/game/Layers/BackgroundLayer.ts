@@ -25,4 +25,3 @@ export class BackgroundLayer extends FixRatioContainer {
         this.addChild(bg)
     }
 }
-

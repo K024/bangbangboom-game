@@ -1,14 +1,12 @@
-
 const now = () => performance.now() / 1000
 
 export class Ticker {
-
     /** delta and now are in seconds */
     Tick = new Set<(delta: number, now: number) => void>()
     private lasttime = 0
     private StopFlag = true
     private EndFlag = true
-    SkipFrame = 0;
+    SkipFrame = 0
 
     Start() {
         if (!this.EndFlag) return
@@ -32,8 +30,7 @@ export class Ticker {
 
             const n = now()
             if (this.Tick) {
-                for (const t of this.Tick)
-                    t(n - this.lasttime, n)
+                for (const t of this.Tick) t(n - this.lasttime, n)
             }
 
             this.lasttime = n

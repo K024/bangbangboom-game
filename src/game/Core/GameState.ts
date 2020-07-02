@@ -36,15 +36,21 @@ function multiplier(life: number) {
 const initLife = 100
 const maxScore = 1000000
 
-export type PointerEventInfo = { pointerId: number, time: number, lane: number, type: "down" | "up" | "move", x: number, y: number }
+export type PointerEventInfo = {
+    pointerId: number
+    time: number
+    lane: number
+    type: "down" | "up" | "move"
+    x: number
+    y: number
+}
 
 @injectable()
 export class GameState {
     constructor(resources: Resources, config: GameConfig) {
         this.map = fromRawMap(resources.map.data)
         if (config.mirror) {
-            for (const n of this.map.notes)
-                n.lane = 6 - n.lane
+            for (const n of this.map.notes) n.lane = 6 - n.lane
         }
         this.musicTime = Math.min(-1, (this.map.notes[0]?.time || 0) - 5)
         this.maxScore = this.map.combo * 100
@@ -62,11 +68,15 @@ export class GameState {
         this.on.end.add(() => {
             this._ended = true
             for (const key in this.on) {
-                (this.on as { [k: string]: GameEvent })[key].clear()
+                ;(this.on as { [k: string]: GameEvent })[key].clear()
             }
         })
-        this.on.pause.add(() => { this._paused = true })
-        this.on.continue.add(() => { this._paused = false })
+        this.on.pause.add(() => {
+            this._paused = true
+        })
+        this.on.continue.add(() => {
+            this._paused = false
+        })
     }
 
     map: GameMap
@@ -82,12 +92,18 @@ export class GameState {
     bad = 0
     miss = 0
 
-    get paused() { return this._paused }
-    get ended() { return this._ended }
-    get score() { return Math.round(this.currentScore * maxScore / this.maxScore) }
+    get paused() {
+        return this._paused
+    }
+    get ended() {
+        return this._ended
+    }
+    get score() {
+        return Math.round((this.currentScore * maxScore) / this.maxScore)
+    }
 
     on = {
-        musicTimeUpdate: new GameEvent<[{ musicTime: number, visualTime: number, judgeTime: number }]>(),
+        musicTimeUpdate: new GameEvent<[{ musicTime: number; visualTime: number; judgeTime: number }]>(),
         pointer: new GameEvent<[PointerEventInfo]>(),
         judge: new GameEvent<[Note]>(),
         /** [type, delay(in seconds)] */
@@ -114,10 +130,8 @@ export class GameState {
     private addJudge(j: Judge, isSlideAmong: boolean) {
         if (j === "perfect" || j === "great") {
             this.currentCombo++
-            if (this.maxCombo < this.currentCombo)
-                this.maxCombo = this.currentCombo
-            if (this.currentCombo === this.map.combo)
-                this.on.fullCombo.emit()
+            if (this.maxCombo < this.currentCombo) this.maxCombo = this.currentCombo
+            if (this.currentCombo === this.map.combo) this.on.fullCombo.emit()
         } else {
             this.currentCombo = 0
         }
@@ -129,4 +143,3 @@ export class GameState {
         this.currentScore += base * multiplier(this.life)
     }
 }
-

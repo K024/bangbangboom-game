@@ -33,9 +33,15 @@ type FinishLayerInfo = {
 
 @injectable()
 export class FinishLayer extends FixRatioContainer {
-    constructor(state: GameState, events: GlobalEvents, resources: Resources, loadcfg: GameLoadConfig, ioc: IOC, config: GameConfig) {
+    constructor(
+        state: GameState,
+        events: GlobalEvents,
+        resources: Resources,
+        loadcfg: GameLoadConfig,
+        ioc: IOC,
+        config: GameConfig
+    ) {
         super(LayerWidth, LayerHeight)
-
 
         this.resize(...events.Resize.prevArgs)
         events.Resize.add((remove, w, h) => {
@@ -46,14 +52,21 @@ export class FinishLayer extends FixRatioContainer {
         const info = resources.ui.data.info.score as FinishLayerInfo
         const textures = resources.ui.textures
 
-
         if (info.other instanceof Array) {
             for (const x of info.other) {
                 this.addChild(new InfoSprite(x, textures))
             }
         }
 
-        const numbers = ["perfect", "great", "good", "bad", "miss", "score", "combo"] as ["perfect", "great", "good", "bad", "miss", "score", "combo"]
+        const numbers = ["perfect", "great", "good", "bad", "miss", "score", "combo"] as [
+            "perfect",
+            "great",
+            "good",
+            "bad",
+            "miss",
+            "score",
+            "combo"
+        ]
         numbers.forEach(x => {
             const n = new InfoNumberSprite(info[x], textures!)
             if (x === "combo") n.setValue(state.maxCombo)
@@ -101,9 +114,10 @@ export class FinishLayer extends FixRatioContainer {
         }
     }
 
-    onRetry = () => { /** */ }
-    onBack = () => { /** */ }
+    onRetry = () => {
+        /** */
+    }
+    onBack = () => {
+        /** */
+    }
 }
-
-
-

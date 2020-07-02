@@ -44,8 +44,6 @@ export const soundNames = {
     perfect: "perfect.mp3",
 }
 
-
 export function staytime(speed: number) {
     return 5.5 - (speed - 1) / 2
 }
-

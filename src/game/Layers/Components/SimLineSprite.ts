@@ -21,7 +21,6 @@ export class SimLineSprite extends Sprite {
     }
 
     update(musicTime: number) {
-
         if (!this.visible || this.shouldRemove || !this.sim) return
 
         if (this.sim.left.judge || this.sim.right.judge || musicTime > this.sim.left.time + 1) {
@@ -42,4 +41,3 @@ export class SimLineSprite extends Sprite {
         this.zIndex = lp.scale
     }
 }
-

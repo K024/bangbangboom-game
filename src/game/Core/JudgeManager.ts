@@ -5,11 +5,15 @@ import { GameConfig } from "./GameConfig"
 import { JudgeOffset, Judge } from "./Constants"
 import { findex, assert } from "../../core/Utils"
 
-export abstract class AbsctractJudgeManager { }
+export abstract class AbsctractJudgeManager {}
 
 const Getters = {
-    single() { return JudgeOffset.typeA },
-    flick() { return JudgeOffset.typeA },
+    single() {
+        return JudgeOffset.typeA
+    },
+    flick() {
+        return JudgeOffset.typeA
+    },
     slidestart(note: SlideStart) {
         if (note.parent.long) return JudgeOffset.typeA
         return JudgeOffset.typeC
@@ -52,14 +56,20 @@ export class JudgeManager extends AbsctractJudgeManager {
 
         let pool: Note[] = []
 
-        const holdingSlides = new Map<number, {
-            track: PointerEventInfo[],
-            slide: Slide
-        }>()
-        const holdingFlicks = new Map<number, {
-            note: Flick | SlideFlickEnd,
-            start: PointerEventInfo
-        }>()
+        const holdingSlides = new Map<
+            number,
+            {
+                track: PointerEventInfo[]
+                slide: Slide
+            }
+        >()
+        const holdingFlicks = new Map<
+            number,
+            {
+                note: Flick | SlideFlickEnd
+                start: PointerEventInfo
+            }
+        >()
 
         state.on.judge.add((remove, note) => {
             if (state.ended) remove()
@@ -87,8 +97,7 @@ export class JudgeManager extends AbsctractJudgeManager {
 
             let i = nextJudgeIndex
             while (i < list.length && list[i].time <= mt + 0.3) {
-                if (!list[i].judge)
-                    pool.push(list[i])
+                if (!list[i].judge) pool.push(list[i])
                 i++
             }
             nextJudgeIndex = i
@@ -130,11 +139,13 @@ export class JudgeManager extends AbsctractJudgeManager {
                 // focus on slideamongs
                 if (!(s.type === "slideamong" && s.parent.pointerId && slideNowJudge(s))) continue
                 const j = getJudgeFunction(s)(mt - s.time)
-                if (j === "perfect") { // this only indicates we can judge it now
+                if (j === "perfect") {
+                    // this only indicates we can judge it now
                     const p = s.parent
                     const info = holdingSlides.get(p.pointerId!)
                     if (info) {
-                        if (Math.abs(findex(info.track, -1).lane - s.lane) <= 1) { // todo: care about this
+                        if (Math.abs(findex(info.track, -1).lane - s.lane) <= 1) {
+                            // todo: care about this
                             s.judge = j
                             p.nextJudgeIndex!++
                             state.on.judge.emit(s)
@@ -179,7 +190,7 @@ export class JudgeManager extends AbsctractJudgeManager {
                     if (Math.abs(start.lane - s.lane) <= 1) {
                         holdingFlicks.set(s.parent.pointerId!, {
                             note: s,
-                            start
+                            start,
                         })
                     }
                 }
@@ -238,8 +249,11 @@ export class JudgeManager extends AbsctractJudgeManager {
                         // holding flicks
                         if (x.type === "flick" && x.pointerId) return false
                         // holding slide notes
-                        if ((x.type === "slideamong" || x.type === "slideend" || x.type === "flickend")
-                            && x.parent.pointerId) return false
+                        if (
+                            (x.type === "slideamong" || x.type === "slideend" || x.type === "flickend") &&
+                            x.parent.pointerId
+                        )
+                            return false
                         return true
                     })
                     if (canDown.length <= 0) break
@@ -257,12 +271,12 @@ export class JudgeManager extends AbsctractJudgeManager {
                                 n.parent.nextJudgeIndex++
                                 holdingSlides.set(pointer.pointerId, {
                                     track: [pointer],
-                                    slide: n.parent
+                                    slide: n.parent,
                                 })
                                 if (n.type === "slidestart" && n.parent.long && n.parent.flickend) {
                                     holdingFlicks.set(pointer.pointerId, {
                                         note: n.parent.notes[1] as SlideFlickEnd,
-                                        start: pointer
+                                        start: pointer,
                                     })
                                 }
                             } else if (n.type === "slideend") {
@@ -275,7 +289,7 @@ export class JudgeManager extends AbsctractJudgeManager {
                         } else {
                             holdingFlicks.set(pointer.pointerId, {
                                 note: n,
-                                start: pointer
+                                start: pointer,
                             })
                             if (n.type === "flick") n.pointerId = pointer.pointerId
                         }
@@ -344,12 +358,8 @@ export class JudgeManager extends AbsctractJudgeManager {
             }
 
             if (pointer.type === "down" && !downHandled) {
-                if (pointer.lane !== -1)
-                    state.on.emptyTap.emit(pointer.lane)
+                if (pointer.lane !== -1) state.on.emptyTap.emit(pointer.lane)
             }
-
         })
-
     }
 }
-

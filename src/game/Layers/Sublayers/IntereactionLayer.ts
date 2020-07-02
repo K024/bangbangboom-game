@@ -1,4 +1,4 @@
-import { Container, Graphics, interaction } from "pixi.js"
+import { Container, Graphics, InteractionEvent } from "pixi.js"
 import { LayerHeight, CenterX, LaneWidth } from "../../Core/Constants"
 import { GameConfig } from "../../Core/GameConfig"
 import { injectable } from "inversify"
@@ -6,10 +6,7 @@ import { GameState } from "../../Core/GameState"
 
 @injectable()
 export class IntereactionLayer extends Container {
-    constructor(
-        config: GameConfig,
-        state: GameState
-    ) {
+    constructor(config: GameConfig, state: GameState) {
         super()
 
         const hw = 4.5 * LaneWidth
@@ -40,34 +37,33 @@ export class IntereactionLayer extends Container {
             pointerup: "up",
             pointerdown: "down",
             pointerupoutside: "up",
-            pointermove: "move"
+            pointermove: "move",
         }
 
-
         const listen = (...events: string[]) => {
-            events.forEach(name => rect.on(name, (e: interaction.InteractionEvent) => {
-                e.stopPropagation()
+            events.forEach(name =>
+                rect.on(name, (e: InteractionEvent) => {
+                    e.stopPropagation()
 
-                const type = typemap[name]
-                const p = rect.toLocal(e.data.global)
-                const pointerId = e.data.pointerId || 0xffffff
+                    const type = typemap[name]
+                    const p = rect.toLocal(e.data.global)
+                    const pointerId = e.data.pointerId || 0xffffff
 
-                const ev = {
-                    pointerId,
-                    time: 0,
-                    lane: getlane(p.x, p.y),
-                    type,
-                    x: p.x,
-                    y: p.y
-                }
-                state.on.pointer.emit(ev)
+                    const ev = {
+                        pointerId,
+                        time: 0,
+                        lane: getlane(p.x, p.y),
+                        type,
+                        x: p.x,
+                        y: p.y,
+                    }
+                    state.on.pointer.emit(ev)
 
-                if (config.debug && name.indexOf("move") < 0) console.log(name, ev)
-            }))
+                    if (config.debug && name.indexOf("move") < 0) console.log(name, ev)
+                })
+            )
         }
 
         listen("pointerup", "pointerdown", "pointerupoutside", "pointermove")
     }
 }
-
-

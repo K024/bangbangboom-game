@@ -1,7 +1,6 @@
 import { CenterX, FarLineZ, LaneInfY, LaneBottomY } from "./Constants"
 import { ratio } from "../../core/Utils"
 
-
 /**
  * fall function
  * @param t 0: near, -1: far
@@ -40,6 +39,3 @@ export function projection(trackpos: number, laneOffset: number) {
         scale: r,
     }
 }
-
-
-

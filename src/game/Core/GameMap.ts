@@ -1,7 +1,6 @@
 import * as RawMap from "../../core/Map"
-import { findex } from '../../core/Utils'
-import { Judge } from './Constants'
-
+import { findex } from "../../core/Utils"
+import { Judge } from "./Constants"
 
 export type JudgePoint = {
     /** real time from music start */
@@ -88,7 +87,9 @@ export function fromRawMap(map: RawMap.RawMap): GameMap {
     const slidenotes = new Map<number, RawMap.NoteType[]>()
     for (const s of map.slides) {
         slideset.set(s.id, {
-            type: "slide", flickend: s.flickend, notes: []
+            type: "slide",
+            flickend: s.flickend,
+            notes: [],
         })
     }
     for (const n of map.notes) {
@@ -117,13 +118,9 @@ export function fromRawMap(map: RawMap.RawMap): GameMap {
                 s.notes.push(start)
             } else {
                 if (n === l[l.length - 1]) {
-                    if (s.flickend)
-                        notes.push({ type: "flickend", parent: s, time: n.time, lane: n.lane })
-                    else
-                        notes.push({ type: "slideend", parent: s, time: n.time, lane: n.lane })
-                }
-                else
-                    notes.push({ type: "slideamong", parent: s, time: n.time, lane: n.lane })
+                    if (s.flickend) notes.push({ type: "flickend", parent: s, time: n.time, lane: n.lane })
+                    else notes.push({ type: "slideend", parent: s, time: n.time, lane: n.lane })
+                } else notes.push({ type: "slideamong", parent: s, time: n.time, lane: n.lane })
                 const start = findex(s.notes, -1) as SlideStart
                 const end = findex(notes, -1) as SlideAmong
                 s.notes.push(end)

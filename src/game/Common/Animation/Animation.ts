@@ -42,8 +42,7 @@ function CalcAnimation(anim: Animation, time: number) {
     if (anim.loop || anim.yoyo) {
         const t = (time / anim.totaltime) | 0
         time -= anim.totaltime * t
-        if (anim.yoyo && t % 2)
-            time = anim.totaltime - time
+        if (anim.yoyo && t % 2) time = anim.totaltime - time
     }
     const list = anim.keyframes
     if (list.length === 0) {
@@ -60,8 +59,10 @@ function CalcAnimation(anim: Animation, time: number) {
     const start = list[i]
     const end = list[i + 1]
     switch (start.type) {
-        case "static": return start.value
-        case "linear": return ratio(start.time, end.time, time, start.value, end.value)
+        case "static":
+            return start.value
+        case "linear":
+            return ratio(start.time, end.time, time, start.value, end.value)
         case "bezier": {
             let calc = bezierCalc.get(start.ctrl)
             if (!calc) {
@@ -77,7 +78,6 @@ function CalcAnimation(anim: Animation, time: number) {
 export type PropertySetter = { [prop: string]: (v: number) => void }
 
 export class AnimationManager {
-
     constructor(setter?: PropertySetter) {
         this.propSetter = setter
     }
@@ -97,9 +97,9 @@ export class AnimationManager {
         if (this.propSetter) {
             for (const [prop, anim] of this.animations) {
                 const origvalue = CalcAnimation(anim, this.currentTime)
-                const value = origvalue
-                    * (typeof anim.scale === "number" ? anim.scale : 1)
-                    + (typeof anim.base === "number" ? anim.base : 0)
+                const value =
+                    origvalue * (typeof anim.scale === "number" ? anim.scale : 1) +
+                    (typeof anim.base === "number" ? anim.base : 0)
                 if (this.propSetter[prop]) this.propSetter[prop](value)
                 if (!anim.loop && !anim.yoyo && this.currentTime >= anim.totaltime) endcount++
             }
@@ -121,17 +121,17 @@ export class AnimationManager {
 export function CreatePixiPropSetter(obj: DisplayObject): PropertySetter {
     const s = obj as Sprite
     return {
-        x: v => s.x = v,
-        y: v => s.y = v,
-        alpha: v => s.alpha = v,
-        rotation: v => s.rotation = v,
-        angle: v => s.angle = v,
+        x: v => (s.x = v),
+        y: v => (s.y = v),
+        alpha: v => (s.alpha = v),
+        rotation: v => (s.rotation = v),
+        angle: v => (s.angle = v),
         scale: v => s.scale.set(v),
-        scalex: v => s.scale.x = v,
-        scaley: v => s.scale.y = v,
-        r: v => s.tint = setByte(s.tint, 2, v),
-        g: v => s.tint = setByte(s.tint, 1, v),
-        b: v => s.tint = setByte(s.tint, 0, v),
+        scalex: v => (s.scale.x = v),
+        scaley: v => (s.scale.y = v),
+        r: v => (s.tint = setByte(s.tint, 2, v)),
+        g: v => (s.tint = setByte(s.tint, 1, v)),
+        b: v => (s.tint = setByte(s.tint, 0, v)),
     }
 }
 
@@ -139,23 +139,23 @@ export const keyFramePresets = {
     linear: {
         type: "linear",
         time: 0,
-        value: 0
+        value: 0,
     } as Keyframe,
     easeInOUt: {
         type: "bezier",
-        ctrl: [.42, 0, .58, 1],
+        ctrl: [0.42, 0, 0.58, 1],
         time: 0,
         value: 0,
     } as Keyframe,
     easeIn: {
         type: "bezier",
-        ctrl: [.42, 0, 1, 1],
+        ctrl: [0.42, 0, 1, 1],
         time: 0,
         value: 0,
     } as Keyframe,
     easeOut: {
         type: "bezier",
-        ctrl: [0, 0, .58, 1],
+        ctrl: [0, 0, 0.58, 1],
         time: 0,
         value: 0,
     } as Keyframe,
@@ -163,13 +163,16 @@ export const keyFramePresets = {
 
 export function createSimpleAnimation(from: number, to: number, time: number, keyframe: Keyframe): Animation {
     return {
-        keyframes: [keyframe, {
-            type: "linear",
-            time,
-            value: 1
-        }],
+        keyframes: [
+            keyframe,
+            {
+                type: "linear",
+                time,
+                value: 1,
+            },
+        ],
         totaltime: time,
         base: from,
-        scale: (to - from),
+        scale: to - from,
     }
 }

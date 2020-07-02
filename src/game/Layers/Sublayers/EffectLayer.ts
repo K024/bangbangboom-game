@@ -19,7 +19,6 @@ type EffectLayerInfo = {
 }
 
 export class SingleEffectLayer extends Container {
-
     constructor(private info: EffectInfo, private textures: ITextureDictionary | undefined, private initScale: number) {
         super()
         this.pool.newObj = () => {
@@ -28,7 +27,7 @@ export class SingleEffectLayer extends Container {
             this.addChild(eff)
             return eff
         }
-        this.pool.beforeSave = e => e.visible = false
+        this.pool.beforeSave = e => (e.visible = false)
     }
 
     private pool = new ObjectPool<InfoEffect>()
@@ -52,7 +51,7 @@ export class SingleEffectLayer extends Container {
         e.visible = true
     }
 
-    setTrackedEffect(tracker: () => { x: number, y: number, visible: boolean }) {
+    setTrackedEffect(tracker: () => { x: number; y: number; visible: boolean }) {
         const e = this.pool.get()
 
         const pupdate = e.update
@@ -79,15 +78,11 @@ function GetSlidePos(note: Slide, musicTime: number) {
     const i = note.nextJudgeIndex || 1
     const n1 = note.notes[i - 1]
     const n2 = note.notes[i]
-    return ratio(n1.time, n2.time, musicTime,
-        LaneCenterXs[n1.lane], LaneCenterXs[n2.lane])
+    return ratio(n1.time, n2.time, musicTime, LaneCenterXs[n1.lane], LaneCenterXs[n2.lane])
 }
-
 
 @injectable()
 export class EffectLayer extends Container {
-
-
     constructor(resources: Resources, state: GameState, events: GlobalEvents, config: GameConfig) {
         super()
         const info = resources.effect.data.info as EffectLayerInfo
@@ -115,29 +110,26 @@ export class EffectLayer extends Container {
             }
             if (n.type !== "single" && n.type !== "flick") {
                 if (slides.has(n.parent)) {
-                    if (n.type === "slideend" || n.type === "flickend")
-                        slides.delete(n.parent)
+                    if (n.type === "slideend" || n.type === "flickend") slides.delete(n.parent)
                 } else {
                     slides.add(n.parent)
                     slide.setTrackedEffect(() => {
                         const p = n.parent
                         const mt = state.on.musicTimeUpdate.prevArgs[0].visualTime
-                        const visible = p.nextJudgeIndex! < p.notes.length
-                            && slides.has(p) && findex(p.notes, -1).time >= mt
+                        const visible =
+                            p.nextJudgeIndex! < p.notes.length && slides.has(p) && findex(p.notes, -1).time >= mt
                         return {
-                            x: visible && GetSlidePos(p, mt) || 0,
+                            x: (visible && GetSlidePos(p, mt)) || 0,
                             y: LaneBottomY,
-                            visible
+                            visible,
                         }
                     })
                 }
-
             }
         })
 
         state.on.emptyTap.add((remove, l) => {
-            if (0 <= l && l <= 6)
-                tap.setEffect(LaneCenterXs[l], LaneBottomY)
+            if (0 <= l && l <= 6) tap.setEffect(LaneCenterXs[l], LaneBottomY)
         })
 
         state.on.fullCombo.add(() => {

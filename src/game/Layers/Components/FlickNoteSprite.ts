@@ -50,4 +50,3 @@ export class FlickNoteSprite extends Sprite {
         this.zIndex = p.scale
     }
 }
-

@@ -1,4 +1,16 @@
-import { Geometry, TYPES, AbstractBatchRenderer, Renderer, BatchShaderGenerator, ViewableBuffer, utils, Sprite, Texture, Point, Buffer } from "pixi.js"
+import {
+    Geometry,
+    TYPES,
+    AbstractBatchRenderer,
+    Renderer,
+    BatchShaderGenerator,
+    ViewableBuffer,
+    utils,
+    Sprite,
+    Texture,
+    Point,
+    Buffer,
+} from "pixi.js"
 
 // modified from
 // https://github.com/pixijs/pixi-projection/
@@ -49,10 +61,10 @@ class Batch2dGeometry extends Geometry {
 
         this._indexBuffer = new Buffer(null!, _static, true)
 
-        this.addAttribute('aVertexPosition', this._buffer, 3, false, TYPES.FLOAT)
-            .addAttribute('aTextureCoord', this._buffer, 2, false, TYPES.FLOAT)
-            .addAttribute('aColor', this._buffer, 4, true, TYPES.UNSIGNED_BYTE)
-            .addAttribute('aTextureId', this._buffer, 1, true, TYPES.FLOAT)
+        this.addAttribute("aVertexPosition", this._buffer, 3, false, TYPES.FLOAT)
+            .addAttribute("aTextureCoord", this._buffer, 2, false, TYPES.FLOAT)
+            .addAttribute("aColor", this._buffer, 4, true, TYPES.UNSIGNED_BYTE)
+            .addAttribute("aTextureId", this._buffer, 1, true, TYPES.FLOAT)
             .addIndex(this._indexBuffer)
     }
 }
@@ -68,11 +80,14 @@ class Batch2dPlugin extends AbstractBatchRenderer {
 
     vertexSize: number
 
-    packInterleavedGeometry(element: any, attributeBuffer: ViewableBuffer, indexBuffer: Uint16Array, aIndex: number, iIndex: number) {
-        const {
-            uint32View,
-            float32View,
-        } = attributeBuffer
+    packInterleavedGeometry(
+        element: any,
+        attributeBuffer: ViewableBuffer,
+        indexBuffer: Uint16Array,
+        aIndex: number,
+        iIndex: number
+    ) {
+        const { uint32View, float32View } = attributeBuffer
 
         const packedVertices = aIndex / this.vertexSize
         const uvs = element.uvs
@@ -82,10 +97,10 @@ class Batch2dPlugin extends AbstractBatchRenderer {
         const textureId = element._texture.baseTexture._batchLocation
 
         const alpha = Math.min(element.worldAlpha, 1.0)
-        const argb = (alpha < 1.0
-            && element._texture.baseTexture.alphaMode)
-            ? utils.premultiplyTint(element._tintRGB, alpha)
-            : element._tintRGB + (alpha * 255 << 24)
+        const argb =
+            alpha < 1.0 && element._texture.baseTexture.alphaMode
+                ? utils.premultiplyTint(element._tintRGB, alpha)
+                : element._tintRGB + ((alpha * 255) << 24)
 
         if (vertexData2d) {
             for (let i = 0, j = 0; i < vertexData2d.length; i += 3, j += 2) {
@@ -116,21 +131,29 @@ class Batch2dPlugin extends AbstractBatchRenderer {
     }
 }
 
-Renderer.registerPlugin('mybatch2d', Batch2dPlugin as any)
+Renderer.registerPlugin("mybatch2d", Batch2dPlugin as any)
 
 export class Sprite2d extends Sprite {
     constructor(texture?: Texture) {
         super(texture)
-        this.pluginName = 'mybatch2d'
+        this.pluginName = "mybatch2d"
     }
 
     vertexData2d?: Float32Array
 
     projection = new Point()
-    get projectionX() { return this.projection.x }
-    set projectionX(v) { this.projection.x = v }
-    get projectionY() { return this.projection.y }
-    set projectionY(v) { this.projection.y = v }
+    get projectionX() {
+        return this.projection.x
+    }
+    set projectionX(v) {
+        this.projection.x = v
+    }
+    get projectionY() {
+        return this.projection.y
+    }
+    set projectionY(v) {
+        this.projection.y = v
+    }
 
     calculateVertices() {
         const texture = this.texture
@@ -162,10 +185,10 @@ export class Sprite2d extends Sprite {
         if (trim) {
             // if the sprite is trimmed and is not a tilingsprite then we need to add the extra
             // space before transforming the sprite coords.
-            w1 = trim.x - (anchor._x * orig.width)
+            w1 = trim.x - anchor._x * orig.width
             w0 = w1 + trim.width
 
-            h1 = trim.y - (anchor._y * orig.height)
+            h1 = trim.y - anchor._y * orig.height
             h0 = h1 + trim.height
         } else {
             w1 = -anchor._x * orig.width
@@ -191,26 +214,26 @@ export class Sprite2d extends Sprite {
         const ty = wt.ty
         // xy
         vertexData2d[2] = w1 * px + h1 * py + 1
-        vertexData2d[0] = (a * w1) + (c * h1) + tx * vertexData2d[2]
-        vertexData2d[1] = (d * h1) + (b * w1) + ty * vertexData2d[2]
+        vertexData2d[0] = a * w1 + c * h1 + tx * vertexData2d[2]
+        vertexData2d[1] = d * h1 + b * w1 + ty * vertexData2d[2]
         vertexData[0] = vertexData2d[0] / vertexData2d[2]
         vertexData[1] = vertexData2d[1] / vertexData2d[2]
         // xy
         vertexData2d[5] = w0 * px + h1 * py + 1
-        vertexData2d[3] = (a * w0) + (c * h1) + tx * vertexData2d[5]
-        vertexData2d[4] = (d * h1) + (b * w0) + ty * vertexData2d[5]
+        vertexData2d[3] = a * w0 + c * h1 + tx * vertexData2d[5]
+        vertexData2d[4] = d * h1 + b * w0 + ty * vertexData2d[5]
         vertexData[2] = vertexData2d[3] / vertexData2d[5]
         vertexData[3] = vertexData2d[4] / vertexData2d[5]
         // xy
         vertexData2d[8] = w0 * px + h0 * py + 1
-        vertexData2d[6] = (a * w0) + (c * h0) + tx * vertexData2d[8]
-        vertexData2d[7] = (d * h0) + (b * w0) + ty * vertexData2d[8]
+        vertexData2d[6] = a * w0 + c * h0 + tx * vertexData2d[8]
+        vertexData2d[7] = d * h0 + b * w0 + ty * vertexData2d[8]
         vertexData[4] = vertexData2d[6] / vertexData2d[8]
         vertexData[5] = vertexData2d[7] / vertexData2d[8]
         // xy
         vertexData2d[11] = w1 * px + h0 * py + 1
-        vertexData2d[9] = (a * w1) + (c * h0) + tx * vertexData2d[11]
-        vertexData2d[10] = (d * h0) + (b * w1) + ty * vertexData2d[11]
+        vertexData2d[9] = a * w1 + c * h0 + tx * vertexData2d[11]
+        vertexData2d[10] = d * h0 + b * w1 + ty * vertexData2d[11]
         vertexData[6] = vertexData2d[9] / vertexData2d[11]
         vertexData[7] = vertexData2d[10] / vertexData2d[11]
 

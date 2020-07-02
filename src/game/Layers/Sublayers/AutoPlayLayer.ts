@@ -9,7 +9,7 @@ export class AutoPlayLayer extends Container {
 
         const auto = new Text("AUTOPLAY", {
             fontSize: 52,
-            fill: [0xffffff, 0x888888]
+            fill: [0xffffff, 0x888888],
         })
 
         auto.blendMode = BLEND_MODES.ADD

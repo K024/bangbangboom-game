@@ -10,7 +10,7 @@ export class InfoEffect extends Container {
 
         if (info.particles instanceof Array) {
             for (const x of info.particles) {
-                const p = new ParticleEmitter(textures && x.textures.map(t => textures[t]) || [], x.option)
+                const p = new ParticleEmitter((textures && x.textures.map(t => textures[t])) || [], x.option)
                 p.currentTime = -(x.delay || 0)
                 this.delaymap.set(p, -(x.delay || 0))
                 this.addChild(p)
@@ -82,4 +82,3 @@ export class InfoEffect extends Container {
         return true
     }
 }
-

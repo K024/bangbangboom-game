@@ -27,15 +27,13 @@ export class GameScene extends Container {
         ioc.bind(GameState).toConstantValue(state)
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const judger = config.autoplay ? ioc.resolve(AutoJudgeManager)
-            : ioc.resolve(JudgeManager)
+        const judger = config.autoplay ? ioc.resolve(AutoJudgeManager) : ioc.resolve(JudgeManager)
 
         ioc.resolve(MusciManager)
         ioc.resolve(SoundManager)
 
         this.addChild(ioc.resolve(GameLayer))
-        if (config.debug)
-            this.addChild(ioc.resolve(DebugLayer))
+        if (config.debug) this.addChild(ioc.resolve(DebugLayer))
 
         let pauseLayer: Container
 
@@ -51,7 +49,7 @@ export class GameScene extends Container {
 
         state.on.end.add(() => {
             const finish = ioc.resolve(FinishScene)
-            switcher.switch(this, finish).outEnd.add((remove) => {
+            switcher.switch(this, finish).outEnd.add(remove => {
                 this.destroy({ children: true })
                 remove()
             })
@@ -59,7 +57,7 @@ export class GameScene extends Container {
 
         state.on.restart.add(() => {
             const ready = ioc.resolve(ReadyScene)
-            switcher.switch(this, ready).outEnd.add((remove) => {
+            switcher.switch(this, ready).outEnd.add(remove => {
                 this.destroy({ children: true })
                 remove()
             })

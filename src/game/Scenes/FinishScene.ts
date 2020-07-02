@@ -18,7 +18,7 @@ export class FinishScene extends Container {
         }
         layer.onRetry = () => {
             const ready = ioc.resolve(ReadyScene)
-            swicher.switch(this, ready).outEnd.add((remove) => {
+            swicher.switch(this, ready).outEnd.add(remove => {
                 this.destroy({ children: true })
                 return remove()
             })

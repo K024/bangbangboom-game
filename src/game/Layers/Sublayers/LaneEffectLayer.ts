@@ -11,19 +11,25 @@ export class LaneEffect extends Sprite {
         super(texture)
         this.anim.propSetter = CreatePixiPropSetter(this)
         this.anim.animations.set("scalex", {
-            keyframes: [{ time: 0, value: flip ? -1 : 1, type: "bezier", ctrl: [1, 0, 1, 1] },
-            { time: 0.25, value: flip ? -0.4 : 0.4, type: "static" }],
-            totaltime: 0.25
+            keyframes: [
+                { time: 0, value: flip ? -1 : 1, type: "bezier", ctrl: [1, 0, 1, 1] },
+                { time: 0.25, value: flip ? -0.4 : 0.4, type: "static" },
+            ],
+            totaltime: 0.25,
         })
         this.anim.animations.set("scaley", {
-            keyframes: [{ time: 0, value: 1, type: "bezier", ctrl: [1, 0, 1, 1] },
-            { time: 0.25, value: 0.4, type: "static" }],
-            totaltime: 0.25
+            keyframes: [
+                { time: 0, value: 1, type: "bezier", ctrl: [1, 0, 1, 1] },
+                { time: 0.25, value: 0.4, type: "static" },
+            ],
+            totaltime: 0.25,
         })
         this.anim.animations.set("alpha", {
-            keyframes: [{ time: 0, value: 0.8, type: "bezier", ctrl: [.42, 0, 1, 1] },
-            { time: 0.25, value: 0, type: "static" }],
-            totaltime: 0.25
+            keyframes: [
+                { time: 0, value: 0.8, type: "bezier", ctrl: [0.42, 0, 1, 1] },
+                { time: 0.25, value: 0, type: "static" },
+            ],
+            totaltime: 0.25,
         })
         this.anim.onEnd.add(() => {
             this.visible = false
@@ -53,7 +59,7 @@ export class LaneEffectLayer extends Container {
         const list = [0.166, 0.23, 0.36, 0.5]
 
         const effects = [0, 1, 2, 3, 4, 5, 6].map(x => {
-            const i = (3 - Math.abs(x - 3))
+            const i = 3 - Math.abs(x - 3)
             const e = new LaneEffect(resources.game.textures!["bg_line" + i], x > 3)
             e.y = LaneBottomY
             e.x = LaneCenterXs[x]
@@ -73,13 +79,11 @@ export class LaneEffectLayer extends Container {
         })
 
         state.on.judge.add((remove, n) => {
-            if (n.judge !== "miss")
-                effects[n.lane].setAnim()
+            if (n.judge !== "miss") effects[n.lane].setAnim()
         })
 
         state.on.emptyTap.add((remove, l) => {
             effects[l].setAnim()
         })
-
     }
 }

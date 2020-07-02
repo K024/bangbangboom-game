@@ -6,12 +6,12 @@ const testanim: Animation = {
     loop: true,
     yoyo: false,
     keyframes: [
-        { time: 0, value: 0, type: "linear", },
-        { time: 1, value: 100, type: "linear", },
-        { time: 2, value: 200, type: "bezier", ctrl: [.3, 1.29, .3, 1.29] },
-        { time: 4, value: 300, type: "linear", },
-        { time: 5, value: 0, type: "linear", },
-    ]
+        { time: 0, value: 0, type: "linear" },
+        { time: 1, value: 100, type: "linear" },
+        { time: 2, value: 200, type: "bezier", ctrl: [0.3, 1.29, 0.3, 1.29] },
+        { time: 4, value: 300, type: "linear" },
+        { time: 5, value: 0, type: "linear" },
+    ],
 }
 
 export class TestApp extends Application {
@@ -33,7 +33,7 @@ export class TestApp extends Application {
         const manager = new AnimationManager()
         const sprite = new Sprite(this.loader.resources.effect.textures?.note_double)
         const mapper = CreatePixiPropSetter(sprite)
-        mapper.r(0xFF)
+        mapper.r(0xff)
         mapper.g(0x00)
         mapper.b(0x88)
         manager.propSetter = mapper
@@ -43,4 +43,3 @@ export class TestApp extends Application {
         this.stage.addChild(sprite)
     }
 }
-

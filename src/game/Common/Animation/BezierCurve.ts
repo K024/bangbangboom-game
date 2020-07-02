@@ -27,10 +27,9 @@ export function CreateBezierCurve(ctrl: [number, number, number, number]) {
     const id = bezierFuncId(ctrl)
     let fn = bezierSampleFuncCache.get(id)
     if (fn) return fn
-    const points: { x: number, y: number }[] = []
+    const points: { x: number; y: number }[] = []
     const calc = bezier(ctrl)
-    for (let i = 0; i <= 10; i++)
-        points[i] = calc(i / 10)
+    for (let i = 0; i <= 10; i++) points[i] = calc(i / 10)
     const samples = new Float32Array(101)
     samples[0] = 0
     for (let i = 1; i < 100; i++) {

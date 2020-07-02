@@ -20,7 +20,6 @@ export class Game {
     private readonly events = new GlobalEvents()
 
     constructor(canvas: HTMLCanvasElement, config: Optional<GameConfig>, loadConfig: Optional<GameLoadConfig>) {
-
         this.renderer = autoDetectRenderer({
             view: canvas,
             width: canvas.clientWidth,
@@ -32,14 +31,10 @@ export class Game {
         this.ioc.bind(MainStage).toConstantValue(this.stage)
         this.ioc.bind(GlobalEvents).toConstantValue(this.events)
 
-        if (config instanceof GameConfig)
-            this.ioc.bind(GameConfig).toConstantValue(config)
-        else
-            this.ioc.bind(GameConfig).toConstantValue(Object.assign(new GameConfig(), config))
-        if (loadConfig instanceof GameLoadConfig)
-            this.ioc.bind(GameLoadConfig).toConstantValue(loadConfig)
-        else
-            this.ioc.bind(GameLoadConfig).toConstantValue(Object.assign(new GameLoadConfig(), loadConfig))
+        if (config instanceof GameConfig) this.ioc.bind(GameConfig).toConstantValue(config)
+        else this.ioc.bind(GameConfig).toConstantValue(Object.assign(new GameConfig(), config))
+        if (loadConfig instanceof GameLoadConfig) this.ioc.bind(GameLoadConfig).toConstantValue(loadConfig)
+        else this.ioc.bind(GameLoadConfig).toConstantValue(Object.assign(new GameLoadConfig(), loadConfig))
         this.ioc.bind(SceneSwitcher).toSelf().inSingletonScope()
 
         this.ticker.Tick.add((delta, now) => {
@@ -51,19 +46,19 @@ export class Game {
         this.resize()
         this.stage.addChild(this.ioc.resolve(LoadingScene))
 
-        addAutoListener(window, "blur", (remove) => {
+        addAutoListener(window, "blur", remove => {
             if (this._destroyed) return remove()
             this.events.WindowBlur.emit()
             this.ticker.Stop()
         })
 
-        addAutoListener(window, "focus", (remove) => {
+        addAutoListener(window, "focus", remove => {
             if (this._destroyed) return remove()
             this.ticker.Start()
             this.events.WindowFocus.emit()
         })
 
-        this.events.End.add((remove) => {
+        this.events.End.add(remove => {
             if (this._destroyed) return remove()
             this.destroy()
         })
@@ -89,12 +84,11 @@ export class Game {
         this.events.End.emit()
         for (const e in this.events) this.events[e as keyof GlobalEvents].clear()
         this.ioc.unbindAll()
-        this.stage.destroy({children: true})
+        this.stage.destroy({ children: true })
         this.renderer.clear()
         this.renderer.destroy()
         utils.clearTextureCache()
-        if (this.ondestroyed instanceof Function)
-            this.ondestroyed()
+        if (this.ondestroyed instanceof Function) this.ondestroyed()
     }
 
     private resize() {
@@ -107,4 +101,3 @@ export class Game {
         }
     }
 }
-

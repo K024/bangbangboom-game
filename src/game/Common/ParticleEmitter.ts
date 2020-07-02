@@ -1,20 +1,23 @@
-import { setByte, ObjectPool } from '../Utils/Utils'
-import { GameEvent } from './GameEvent'
-import { Sprite, Texture, BLEND_MODES, Container } from 'pixi.js'
+import { setByte, ObjectPool } from "../Utils/Utils"
+import { GameEvent } from "./GameEvent"
+import { Sprite, Texture, BLEND_MODES, Container } from "pixi.js"
 
-type RangeNumber = {
-    base: number
-    offset: number
-} | {
-    min: number
-    max: number
-} | number[] | number
+type RangeNumber =
+    | {
+          base: number
+          offset: number
+      }
+    | {
+          min: number
+          max: number
+      }
+    | number[]
+    | number
 
 function getRangeValue(n?: RangeNumber) {
     if (n === undefined) return undefined
     if (typeof n === "number") return n
-    if (n instanceof Array)
-        return n[(Math.random() * n.length) | 0]
+    if (n instanceof Array) return n[(Math.random() * n.length) | 0]
     if ("max" in n) return n.min + Math.random() * (n.max - n.min)
     return n.base + (Math.random() * 2 - 1) * n.offset
 }
@@ -43,8 +46,8 @@ export type ParticleOption = {
     duration: number
     emissionRate: number
     emitRect: {
-        x: RangeNumber,
-        y: RangeNumber,
+        x: RangeNumber
+        y: RangeNumber
     }
 
     lifeTime: RangeNumber
@@ -52,9 +55,9 @@ export type ParticleOption = {
     radian: RangeNumber
     speed: RangeNumber
     gravity?: {
-        x: number,
+        x: number
         y: number
-    },
+    }
     /** 不同半径处的加速度 */
     accelRad?: RangeNumber
     /** 切线加速度 */
@@ -74,7 +77,7 @@ export class Particle extends Sprite {
     speedY = 0
     lifetime = 0
     currentTime = 0
-    gravity?: { x: number, y: number }
+    gravity?: { x: number; y: number }
     accelRad = 0
     accelTan = 0
 
@@ -86,9 +89,8 @@ export class Particle extends Sprite {
         this.anchor.set(0.5)
     }
 
-    setOption(option: ParticleOption, offset: { x: number, y: number }) {
-        if (option.blend === "add")
-            this.blendMode = BLEND_MODES.ADD
+    setOption(option: ParticleOption, offset: { x: number; y: number }) {
+        if (option.blend === "add") this.blendMode = BLEND_MODES.ADD
         const speed = getRangeValue(option.speed) || 0
         const radian = getRangeValue(option.radian) || 0
         this.speedX = speed * Math.cos(radian)
@@ -126,16 +128,16 @@ export class Particle extends Sprite {
         if (v !== undefined) set(v)
     }
     private setSize = (v: number) => this.scale.set(v)
-    private setSpin = (v: number) => this.rotation = v
-    private setR = (v: number) => this.tint = setByte(this.tint, 2, v)
-    private setG = (v: number) => this.tint = setByte(this.tint, 1, v)
-    private setB = (v: number) => this.tint = setByte(this.tint, 0, v)
-    private setAlpha = (v: number) => this.alpha = v
+    private setSpin = (v: number) => (this.rotation = v)
+    private setR = (v: number) => (this.tint = setByte(this.tint, 2, v))
+    private setG = (v: number) => (this.tint = setByte(this.tint, 1, v))
+    private setB = (v: number) => (this.tint = setByte(this.tint, 0, v))
+    private setAlpha = (v: number) => (this.alpha = v)
 
     // tslint:disable: no-bitwise
     /**
-     * 
-     * @param dt in seconds 
+     *
+     * @param dt in seconds
      */
     update(dt: number) {
         this.currentTime += dt
@@ -175,11 +177,9 @@ export class Particle extends Sprite {
             this.setRatio("alpha", this.setAlpha)
         }
     }
-
 }
 
 export class ParticleEmitter extends Container {
-
     private poor = new ObjectPool<Particle>()
     private textures: (Texture | undefined)[]
 
@@ -210,7 +210,7 @@ export class ParticleEmitter extends Container {
     currentTime = 0
     private counter = 0
     /**
-     * 
+     *
      * @param dt in seconds
      */
     update(dt: number) {
@@ -219,7 +219,12 @@ export class ParticleEmitter extends Container {
         if (this.currentTime - dt < 0) this.currentTime = 0
 
         if (this.canEmit && (this.option.duration <= 0 || this.currentTime - dt < this.option.duration)) {
-            const time = this.option.duration > 0 ? (this.currentTime < this.option.duration ? dt : this.option.duration - this.currentTime + dt) : dt
+            const time =
+                this.option.duration > 0
+                    ? this.currentTime < this.option.duration
+                        ? dt
+                        : this.option.duration - this.currentTime + dt
+                    : dt
             this.counter += time * this.option.emissionRate
             while (this.counter > 1) {
                 this.counter -= 1
@@ -233,13 +238,11 @@ export class ParticleEmitter extends Container {
             if (!p.visible) continue
             p.update(dt)
 
-            if (p.shouldRemove)
-                this.poor.save(p)
-            else
-                visibleCount++
+            if (p.shouldRemove) this.poor.save(p)
+            else visibleCount++
         }
 
-        if (!this.canEmit || this.option.duration > 0 && this.currentTime >= this.option.duration) {
+        if (!this.canEmit || (this.option.duration > 0 && this.currentTime >= this.option.duration)) {
             if (!this.emitEnded) this.onEmitEnd.emit()
             this.emitEnded = true
         } else {

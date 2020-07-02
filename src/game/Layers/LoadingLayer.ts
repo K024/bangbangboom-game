@@ -2,9 +2,14 @@ import { FixRatioContainer } from "../Common/FixRatioContainer"
 import { injectable } from "inversify"
 import { LayerWidth, LayerHeight } from "../Core/Constants"
 import { Text, Container, TilingSprite, Texture, Graphics } from "pixi.js"
-import { LoadingBackground as LoadingBackground, LoadingMessages } from "../Utils/InCodeAssests"
+import { LoadingBackground, LoadingMessages } from "../Utils/InCodeAssests"
 import { GlobalEvents } from "../Utils/SymbolClasses"
-import { AnimationManager, CreatePixiPropSetter, createSimpleAnimation, keyFramePresets } from "../Common/Animation/Animation"
+import {
+    AnimationManager,
+    CreatePixiPropSetter,
+    createSimpleAnimation,
+    keyFramePresets,
+} from "../Common/Animation/Animation"
 import { GameEvent } from "../Common/GameEvent"
 import { GameLoadConfig } from "../Core/GameConfig"
 
@@ -21,7 +26,7 @@ class LoadProgress {
     private finished = false
 
     /**
-     * 
+     *
      * @param dt 以秒计
      */
     update(dt: number) {
@@ -39,13 +44,9 @@ class LoadProgress {
 
 @injectable()
 export class LoadingLayer extends Container {
-
     progress = new LoadProgress()
 
-    constructor(
-        events: GlobalEvents,
-        config: GameLoadConfig
-    ) {
+    constructor(events: GlobalEvents, config: GameLoadConfig) {
         super()
 
         const backtexture = Texture.from(LoadingBackground)
@@ -97,7 +98,10 @@ export class LoadingLayer extends Container {
             const progress = this.progress.progress
             if (progress > 0.04 && lastProg !== progress) {
                 lastProg = progress
-                bar.clear().beginFill(0xe93f5f).drawRoundedRect(0, 0, 480 * progress, 18, 8).endFill()
+                bar.clear()
+                    .beginFill(0xe93f5f)
+                    .drawRoundedRect(0, 0, 480 * progress, 18, 8)
+                    .endFill()
             }
         })
 
@@ -115,9 +119,7 @@ export class LoadingLayer extends Container {
         return str
     }
 
-
     setTextAnim(text: Text, update: GameEvent<[number, number]>) {
-
         let timeout = 5
 
         const textanim = new AnimationManager(CreatePixiPropSetter(text))
@@ -140,7 +142,7 @@ export class LoadingLayer extends Container {
             textanim.currentTime = 0
             textanim.animations.set("alpha", anim3)
             textanim.animations.set("x", anim4)
-            textanim.onEnd.add((remove) => {
+            textanim.onEnd.add(remove => {
                 textanim.paused = true
                 textanim.currentTime = 0
 
@@ -159,6 +161,3 @@ export class LoadingLayer extends Container {
         return textanim
     }
 }
-
-
-

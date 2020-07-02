@@ -1,5 +1,3 @@
-
-
 export type NoteBase = {
     /** real time from music starts */
     time: number

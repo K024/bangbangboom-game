@@ -7,10 +7,7 @@ import { NumberSprite } from "../Common/NumberSprite"
 
 @injectable()
 export class TestLayer extends FixRatioContainer {
-    constructor(
-        resources: Resources,
-        events: GlobalEvents
-    ) {
+    constructor(resources: Resources, events: GlobalEvents) {
         super(LayerWidth, LayerHeight)
 
         this.resize(...events.Resize.prevArgs)
@@ -25,11 +22,7 @@ export class TestLayer extends FixRatioContainer {
         number.setValue(120)
         this.addChild(number)
 
-        const g = new Graphics()
-            .beginFill(0xff8800, 0.4)
-            .drawRect(300, 300, 100, 100)
-            .endFill()
+        const g = new Graphics().beginFill(0xff8800, 0.4).drawRect(300, 300, 100, 100).endFill()
         this.addChild(g)
     }
 }
-

@@ -1,6 +1,5 @@
 import { Container } from "pixi.js"
 
-
 export class FixRatioContainer extends Container {
     constructor(initWidth: number, initHeight: number, public autoRotate = false) {
         super()
@@ -11,12 +10,16 @@ export class FixRatioContainer extends Container {
     private _width: number
     private _height: number
 
-    get width() { return this._width * this.scale.x }
+    get width() {
+        return this._width * this.scale.x
+    }
     set width(v) {
         const p = v / this._width
         this.scale.set(p, p)
     }
-    get height() { return this._height * this.scale.x }
+    get height() {
+        return this._height * this.scale.x
+    }
     set height(v) {
         const p = v / this._height
         this.scale.set(p, p)
@@ -27,14 +30,16 @@ export class FixRatioContainer extends Container {
         this._height = height
     }
 
-    get ratio() { return this._width / this._height }
+    get ratio() {
+        return this._width / this._height
+    }
 
     resize(containerWidth: number, containerHeight: number, cover = false, hori = 0.5, vert = 0.5) {
         let cr = containerWidth / containerHeight
         const r = this.ratio
         if (this.autoRotate && (cr - 1) * (r - 1) < 0) {
             cr = containerHeight / containerWidth
-            if ((cr > r) !== cover) {
+            if (cr > r !== cover) {
                 this.height = containerWidth
                 this.x = containerWidth
                 this.y = containerHeight * hori - this.width * hori
@@ -44,7 +49,7 @@ export class FixRatioContainer extends Container {
                 this.y = 0
             }
         } else {
-            if ((cr > r) !== cover) {
+            if (cr > r !== cover) {
                 this.height = containerHeight
                 this.x = containerWidth * hori - this.width * hori
                 this.y = 0
@@ -55,5 +60,4 @@ export class FixRatioContainer extends Container {
             }
         }
     }
-
 }

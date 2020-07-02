@@ -10,9 +10,16 @@ const testoption: ParticleOption = {
     radian: -1.52,
     speed: { max: 800, min: 100 },
     gravity: { x: 0, y: 300 },
-    start: { size: { min: 0.05, max: 0.35 }, r: [100, 160], g: 220, b: 250, alpha: 0.6, spin: { base: 0, offset: 3.14 } },
+    start: {
+        size: { min: 0.05, max: 0.35 },
+        r: [100, 160],
+        g: 220,
+        b: 250,
+        alpha: 0.6,
+        spin: { base: 0, offset: 3.14 },
+    },
     end: { alpha: 0, size: 0.1, spin: 0 },
-    blend: "add"
+    blend: "add",
 }
 
 export class TestApp extends Application {
@@ -31,12 +38,10 @@ export class TestApp extends Application {
     }
 
     loaded = () => {
-        const emitter = new ParticleEmitter(
-            [assert(this.loader.resources.effect.textures).note_single], testoption)
+        const emitter = new ParticleEmitter([assert(this.loader.resources.effect.textures).note_single], testoption)
         this.stage.addChild(emitter)
         emitter.position.set(200)
         this.ticker.add(() => emitter.update(this.ticker.deltaMS / 1000))
-        setInterval(() => emitter.currentTime = 0, 2000)
+        setInterval(() => (emitter.currentTime = 0), 2000)
     }
 }
-

@@ -42,4 +42,3 @@ export class SlideNoteSprite extends Sprite {
         this.zIndex = p.scale
     }
 }
-

@@ -3,11 +3,13 @@ import { Animation } from "../Animation/Animation"
 import { Sprite } from "pixi.js"
 
 export type PositionInfo = {
-    x?: number, y?: number
-    width?: number, height?: number
-    anchor?: { x: number, y: number } | number
-    rotation?: number,
-    scale?: { x: number, y: number } | number
+    x?: number
+    y?: number
+    width?: number
+    height?: number
+    anchor?: { x: number; y: number } | number
+    rotation?: number
+    scale?: { x: number; y: number } | number
 }
 
 export type SpriteInfo = {
@@ -26,7 +28,7 @@ export type EffectInfo = {
         textures: string[]
         option: ParticleOption
         delay?: number
-    }>,
+    }>
     sprites?: SpriteInfo[]
 }
 

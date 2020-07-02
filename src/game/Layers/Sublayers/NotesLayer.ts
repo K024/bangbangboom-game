@@ -24,7 +24,7 @@ class BarLayer extends Container {
     }
 
     private nextBarIndex = 0
-    
+
     private pool = new ObjectPool<SlideBarSprite>()
 
     update(musicTime: number, showTime: number) {
@@ -44,7 +44,6 @@ class BarLayer extends Container {
                 this.pool.save(x)
             }
         }
-
     }
 }
 
@@ -61,7 +60,7 @@ class SimLineLayer extends Container {
     }
 
     private nextSimIndex = 0
-    
+
     private pool = new ObjectPool<SimLineSprite>()
 
     update(musicTime: number, showTime: number) {
@@ -100,7 +99,7 @@ class NoteLayer extends Container {
     constructor(private state: GameState, private ioc: IOC) {
         super()
         this.sortableChildren = true
-        for (const key in spritemap){
+        for (const key in spritemap) {
             this.pool[key] = new ObjectPool()
             this.pool[key].newObj = () => {
                 const type = (spritemap as any)[key]
@@ -158,7 +157,7 @@ export class NotesLayer extends Container {
     private simLineLayer: SimLineLayer
     private noteLayer: NoteLayer
 
-    update = (remove: () => void, musicTime: { musicTime: number, visualTime: number, judgeTime: number, }) => {
+    update = (remove: () => void, musicTime: { musicTime: number; visualTime: number; judgeTime: number }) => {
         if (this.state.ended) return remove()
 
         const time = this.helper.staytime + musicTime.visualTime
@@ -168,5 +167,3 @@ export class NotesLayer extends Container {
         this.noteLayer.update(musicTime.visualTime, time)
     }
 }
-
-

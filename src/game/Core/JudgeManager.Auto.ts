@@ -44,10 +44,8 @@ export class AutoJudgeManager extends AbsctractJudgeManager {
                 i++
             }
             nextSoundIndex = i
-
         }
 
         requestAnimationFrame(animloop)
     }
 }
-

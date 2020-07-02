@@ -13,7 +13,7 @@ export class MusciManager {
 
         let endPadding = Math.max(4 - musicSource.duration + (findex(state.map.notes, -1)?.time || 0), 0)
 
-        music.onend.add((remove) => {
+        music.onend.add(remove => {
             remove()
             events.Update.add((remove, dt) => {
                 if (state.ended) return remove()
@@ -32,7 +32,7 @@ export class MusciManager {
 
         music.play(-padding)
 
-        events.Update.add((remove) => {
+        events.Update.add(remove => {
             if (state.ended) return remove()
             if (state.paused) return
 
@@ -41,13 +41,12 @@ export class MusciManager {
             state.on.musicTimeUpdate.emit({
                 musicTime: mt,
                 visualTime: mt + config.visualOffset / 1000,
-                judgeTime: mt + config.judgeOffset / 1000
+                judgeTime: mt + config.judgeOffset / 1000,
             })
         })
 
         events.WindowBlur.add(() => {
-            if (!state.paused)
-                state.on.pause.emit()
+            if (!state.paused) state.on.pause.emit()
         })
 
         state.on.pause.add(() => {
@@ -60,14 +59,11 @@ export class MusciManager {
 
         state.on.musicTimeUpdate.add((remove, mt) => {
             if (state.on.musicTimeUpdate.prevArgs)
-                if (state.on.musicTimeUpdate.prevArgs[0] === mt)
-                    console.warn("no use music time update:", mt)
+                if (state.on.musicTimeUpdate.prevArgs[0] === mt) console.warn("no use music time update:", mt)
         })
 
         events.End.add(() => {
             music.stop()
         })
-
     }
 }
-

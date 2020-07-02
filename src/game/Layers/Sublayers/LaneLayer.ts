@@ -21,4 +21,3 @@ export class LaneLayer extends Container {
         // this.cacheAsBitmap = true
     }
 }
-

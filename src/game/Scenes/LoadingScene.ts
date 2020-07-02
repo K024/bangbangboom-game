@@ -1,13 +1,13 @@
-import { Container, Loader, LoaderResource } from 'pixi.js'
-import { Container as IOC, injectable } from 'inversify'
-import { GameLoadConfig, jsonNames, soundNames } from '../Core/GameConfig'
+import { Container, Loader, LoaderResource } from "pixi.js"
+import { Container as IOC, injectable } from "inversify"
+import { GameLoadConfig, jsonNames, soundNames } from "../Core/GameConfig"
 import { Resources, MainStage } from "../Utils/SymbolClasses"
 import { LoadingLayer } from "../Layers/LoadingLayer"
 import { BackgroundLayer } from "../Layers/BackgroundLayer"
 import { ReadyScene } from "./ReadyScene"
 import { SceneSwitcher } from "./SceneSwitcher"
 import { RawMap } from "../../core/Map"
-import { AudioSource } from '../Common/AudioCtx'
+import { AudioSource } from "../Common/AudioCtx"
 
 function howlerMiddleware(resource: LoaderResource, next: () => void) {
     if (resource.loadType !== LoaderResource.LOAD_TYPE.AUDIO) {
@@ -17,7 +17,7 @@ function howlerMiddleware(resource: LoaderResource, next: () => void) {
 
     const audioSource = AudioSource.from(fetch(resource.url).then(res => res.blob()))
 
-    audioSource.onload.add((remove) => {
+    audioSource.onload.add(remove => {
         resource.data = audioSource
         resource.complete()
         next()
@@ -33,8 +33,8 @@ function howlerMiddleware(resource: LoaderResource, next: () => void) {
 }
 
 const mapContentLoadConfig = {
-    load: () => null as (null | Promise<RawMap> | RawMap),
-    url: "object:///rawmap"
+    load: () => null as null | Promise<RawMap> | RawMap,
+    url: "object:///rawmap",
 }
 
 function mapContentMiddleWare(resource: LoaderResource, next: () => void) {
@@ -46,7 +46,7 @@ function mapContentMiddleWare(resource: LoaderResource, next: () => void) {
             next()
         } else {
             if (res instanceof Promise) {
-                res.then((map) => {
+                res.then(map => {
                     resource.data = map
                     resource.complete()
                     next()
@@ -71,7 +71,7 @@ export class LoadingScene extends Container {
     constructor(
         private ioc: IOC,
         // private stage: MainStage,
-        config: GameLoadConfig,
+        config: GameLoadConfig
     ) {
         super()
 
@@ -84,14 +84,11 @@ export class LoadingScene extends Container {
         if (config.backgroundSrc)
             loader.add("background", config.backgroundSrc, { loadType: LoaderResource.LOAD_TYPE.IMAGE })
         loader.add("map", mapContentLoadConfig.url, { loadType: LoaderResource.LOAD_TYPE.XHR })
-        for (const key in jsonNames)
-            loader.add(key, `${config.skin}/${jsonNames[key as keyof typeof jsonNames]}`)
-        for (const key in soundNames)
-            loader.add(key, `${config.skin}/${soundNames[key as keyof typeof soundNames]}`)
+        for (const key in jsonNames) loader.add(key, `${config.skin}/${jsonNames[key as keyof typeof jsonNames]}`)
+        for (const key in soundNames) loader.add(key, `${config.skin}/${soundNames[key as keyof typeof soundNames]}`)
 
-
-        loader.on("progress", this.progress)
-        loader.on("error", this.error)
+        loader.onProgress.add(this.progress)
+        loader.onError.add(this.error)
         loader.load(this.loaded)
 
         this.layer = ioc.resolve(LoadingLayer)
@@ -118,7 +115,7 @@ export class LoadingScene extends Container {
         const ready = this.ioc.resolve(ReadyScene)
 
         const swicher = this.ioc.get(SceneSwitcher)
-        swicher.switch(this, ready).outEnd.add((remove) => {
+        swicher.switch(this, ready).outEnd.add(remove => {
             this.destroy({ children: true })
             return remove()
         })
@@ -133,4 +130,3 @@ export class LoadingScene extends Container {
         }
     }
 }
-

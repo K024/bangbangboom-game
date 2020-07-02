@@ -1,13 +1,12 @@
-
 export function getByte(number: number, byte: number) {
     const off = (byte | 0) * 8
-    const mask = 0xFF << off
+    const mask = 0xff << off
     return (number & mask) >> off
 }
 export function setByte(number: number, byte: number, value: number) {
     const off = (byte | 0) * 8
-    const v = (value & 0xFF) << off
-    const imask = ~(0xFF << off)
+    const v = (value & 0xff) << off
+    const imask = ~(0xff << off)
     number = (number & imask) | v
     return number
 }
@@ -21,8 +20,11 @@ export const colorByte = {
 export class ObjectPool<T> {
     private pool: T[] = []
 
-    constructor(public newObj?: () => T, public beforeGet?: (o: T) => void | any, public beforeSave?: (o: T) => void | any) {
-    }
+    constructor(
+        public newObj?: () => T,
+        public beforeGet?: (o: T) => void | any,
+        public beforeSave?: (o: T) => void | any
+    ) {}
 
     get() {
         if (!this.newObj) throw new Error("Can not create new object")
@@ -49,9 +51,11 @@ export class ObjectPool<T> {
     }
 }
 
-
-export function addAutoListener<K extends keyof HTMLElementEventMap>
-    (element: HTMLElement | Window, event: K, listener: (remove: () => void, ev: HTMLElementEventMap[K]) => any) {
+export function addAutoListener<K extends keyof HTMLElementEventMap>(
+    element: HTMLElement | Window,
+    event: K,
+    listener: (remove: () => void, ev: HTMLElementEventMap[K]) => any
+) {
     const wrap: any = (ev: HTMLElementEventMap[K]) => {
         const remove = () => element.removeEventListener(event, wrap)
         listener(remove, ev)

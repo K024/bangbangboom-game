@@ -8,10 +8,9 @@ class DigitSprite extends Sprite {
     }
 }
 
-const charCodeZero = '0'.charCodeAt(0)
+const charCodeZero = "0".charCodeAt(0)
 
 class NumberContentSprite extends Container {
-
     private tex: Texture[] = []
     private spritepool: ObjectPool<DigitSprite>[] = []
 
@@ -34,11 +33,14 @@ class NumberContentSprite extends Container {
     padding = 4
 
     setValue(num: number) {
-        const digits = num.toFixed().split("").map(x => x.charCodeAt(0) - charCodeZero)
+        const digits = num
+            .toFixed()
+            .split("")
+            .map(x => x.charCodeAt(0) - charCodeZero)
         const scale = this.fontSize / this.charHeight
         const dx = this.charWidth * scale + this.padding
-        const offx = this.charWidth * scale / 2
-        const offy = this.charHeight * scale / 2
+        const offx = (this.charWidth * scale) / 2
+        const offy = (this.charHeight * scale) / 2
         for (const x of this.children) {
             this.spritepool[(x as DigitSprite).num].save(x as DigitSprite)
         }
@@ -54,7 +56,6 @@ class NumberContentSprite extends Container {
     }
 }
 
-
 export class NumberSprite extends Container {
     private content: NumberContentSprite
     constructor(numberTextures: Texture[]) {
@@ -66,12 +67,24 @@ export class NumberSprite extends Container {
         }, undefined)
     }
 
-    get tint() { return this.content.tint }
-    set tint(v) { this.content.tint = v }
-    get fontSize() { return this.content.fontSize }
-    set fontSize(v) { this.content.fontSize = v }
-    get padding() { return this.content.padding }
-    set padding(v) { this.content.padding = v }
+    get tint() {
+        return this.content.tint
+    }
+    set tint(v) {
+        this.content.tint = v
+    }
+    get fontSize() {
+        return this.content.fontSize
+    }
+    set fontSize(v) {
+        this.content.fontSize = v
+    }
+    get padding() {
+        return this.content.padding
+    }
+    set padding(v) {
+        this.content.padding = v
+    }
 
     anchor: ObservablePoint
 
@@ -82,8 +95,10 @@ export class NumberSprite extends Container {
 
     private justifyPos() {
         const scale = this.fontSize / this.content.charHeight
-        const width = this.content.children.length * this.content.charWidth * scale + (this.content.children.length - 1) * this.padding
+        const width =
+            this.content.children.length * this.content.charWidth * scale +
+            (this.content.children.length - 1) * this.padding
         const height = this.content.charHeight * scale
-        this.content.position.set(- width * this.anchor.x, - height * this.anchor.y)
+        this.content.position.set(-width * this.anchor.x, -height * this.anchor.y)
     }
 }

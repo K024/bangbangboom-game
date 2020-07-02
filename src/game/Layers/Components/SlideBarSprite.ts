@@ -24,7 +24,6 @@ export class SlideBarSprite extends Sprite2d {
         this.shouldRemove = false
     }
 
-
     update(musicTime: number) {
         if (!this.visible || this.shouldRemove || !this.bar) return
 
@@ -33,34 +32,47 @@ export class SlideBarSprite extends Sprite2d {
         let et = this.bar.end.time
         if (et > musicTime + this.helper.staytime) et = musicTime + this.helper.staytime
 
-        if (this.bar.end.judge || this.bar.start.judge === "miss" || st >= et || musicTime > this.bar.end.time + 1
-            || (!this.bar.start.parent.pointerId && musicTime > this.bar.start.time + 1)) {
+        if (
+            this.bar.end.judge ||
+            this.bar.start.judge === "miss" ||
+            st >= et ||
+            musicTime > this.bar.end.time + 1 ||
+            (!this.bar.start.parent.pointerId && musicTime > this.bar.start.time + 1)
+        ) {
             this.shouldRemove = true
             this.visible = false
             this.zIndex = 0
             return
         }
 
-        const startPos = ratio(this.bar.start.time, this.bar.end.time, st,
-            LaneCenterXs[this.bar.start.lane], LaneCenterXs[this.bar.end.lane])
+        const startPos = ratio(
+            this.bar.start.time,
+            this.bar.end.time,
+            st,
+            LaneCenterXs[this.bar.start.lane],
+            LaneCenterXs[this.bar.end.lane]
+        )
         const startT = (musicTime - st) / this.helper.staytime
         const sp = projection(startT, startPos)
 
-        const endPos = ratio(this.bar.start.time, this.bar.end.time, et,
-            LaneCenterXs[this.bar.start.lane], LaneCenterXs[this.bar.end.lane])
+        const endPos = ratio(
+            this.bar.start.time,
+            this.bar.end.time,
+            et,
+            LaneCenterXs[this.bar.start.lane],
+            LaneCenterXs[this.bar.end.lane]
+        )
         const endT = (musicTime - et) / this.helper.staytime
         const ep = projection(endT, endPos)
 
         const f = sp.scale / ep.scale
 
-        const sx = this.helper.noteScale * sp.scale / NoteHelper.noteInitScale
-        const sy = (sp.y - ep.y) / this.texture.height * f
-        this.transform.setFromMatrix(new Matrix(sx, 0,
-            (ep.x - sp.x) / (ep.y - sp.y) * sy, sy, sp.x, sp.y))
+        const sx = (this.helper.noteScale * sp.scale) / NoteHelper.noteInitScale
+        const sy = ((sp.y - ep.y) / this.texture.height) * f
+        this.transform.setFromMatrix(new Matrix(sx, 0, ((ep.x - sp.x) / (ep.y - sp.y)) * sy, sy, sp.x, sp.y))
 
         this.projectionY = 1 - f
 
         this.zIndex = sp.scale
     }
 }
-

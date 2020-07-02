@@ -7,8 +7,7 @@ export class InfoSprite extends Sprite {
         super((info.texture && textures && textures[info.texture]) || undefined)
         this.animation.propSetter = CreatePixiPropSetter(this)
 
-        if (info.position)
-            setPositionInfo(this, info.position)
+        if (info.position) setPositionInfo(this, info.position)
 
         if (info.animations instanceof Object) {
             for (const prop in info.animations) {
@@ -25,9 +24,7 @@ export class InfoSprite extends Sprite {
         }
 
         if (info.blend === "add") this.blendMode = BLEND_MODES.ADD
-        if (info.tint !== undefined)
-            this.tint = parseInt(info.tint.replace("#", "0x"))
-
+        if (info.tint !== undefined) this.tint = parseInt(info.tint.replace("#", "0x"))
     }
 
     private infoSprites: InfoSprite[] = []
@@ -45,8 +42,7 @@ export class InfoSprite extends Sprite {
     resetAnim() {
         this.visible = true
         this.animation.currentTime = 0
-        for (const x of this.infoSprites)
-            x.resetAnim()
+        for (const x of this.infoSprites) x.resetAnim()
     }
 
     allAnimEnd(): boolean {
@@ -57,4 +53,3 @@ export class InfoSprite extends Sprite {
         return true
     }
 }
-

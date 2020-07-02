@@ -1,8 +1,8 @@
 {
     "compilerOptions": {
         "sourceMap": true,
-        "target": "ES6",
-        "module": "esnext",
+        "target": "es2019",
+        "module": "none",
         "moduleResolution": "node",
         "lib": [
             "dom",
@@ -16,12 +16,16 @@
         "emitDecoratorMetadata": true,
         "downlevelIteration": true,
         "strict": true,
-        "strictNullChecks": true
+        "strictNullChecks": true,
+
+        "outDir": "./build",
+        "declaration": true,
     },
     "include": [
-        "./**/*"
+        "./**/*.ts"
     ],
     "exclude": [
+        "build",
         "node_modules"
     ]
 }

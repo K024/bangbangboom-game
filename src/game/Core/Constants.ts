@@ -1,4 +1,3 @@
-
 export const LayerWidth = 1280
 export const LayerHeight = 720
 
@@ -17,7 +16,6 @@ for (let i = -3; i < 4; i++) {
 
 export const FarLineZ = 20
 export const FarLineY = (LaneBottomY - LaneInfY) / FarLineZ + LaneInfY
-
 
 export type Judge = "perfect" | "great" | "good" | "bad" | "miss"
 
@@ -81,5 +79,5 @@ export const JudgeOffset = {
         return "perfect"
     },
     flickOutTime: 0.1,
-    flickOutDis: 40
+    flickOutDis: 40,
 }

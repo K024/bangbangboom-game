@@ -1,15 +1,15 @@
 import { FixRatioContainer } from "../Common/FixRatioContainer"
 import { InfoSprite } from "../Common/InfoObject/InfoSprite"
 import { PositionInfo, SpriteInfo, setPositionInfo } from "../Common/InfoObject/InfoType"
-import { TextStyle, Text, } from "pixi.js"
+import { TextStyle, Text } from "pixi.js"
 import { injectable } from "inversify"
 import { LayerWidth, LayerHeight } from "../Core/Constants"
 import { Resources, GlobalEvents } from "../Utils/SymbolClasses"
 import { GameLoadConfig } from "../Core/GameConfig"
 
 type ReadyLayerInfo = {
-    play: SpriteInfo,
-    auto: SpriteInfo,
+    play: SpriteInfo
+    auto: SpriteInfo
     name?: {
         position: PositionInfo
         style: TextStyle
@@ -66,6 +66,7 @@ export class ReadyLayer extends FixRatioContainer {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    start = (auto = false) => { /** */ }
+    start = (auto = false) => {
+        /** */
+    }
 }
-

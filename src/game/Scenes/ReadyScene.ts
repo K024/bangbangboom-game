@@ -6,7 +6,6 @@ import { GlobalEvents } from "../Utils/SymbolClasses"
 import { GameConfig } from "../Core/GameConfig"
 import { SceneSwitcher } from "./SceneSwitcher"
 
-
 @injectable()
 export class ReadyScene extends Container {
     constructor(ioc: IOC, swicher: SceneSwitcher, events: GlobalEvents, config: GameConfig) {
@@ -18,7 +17,7 @@ export class ReadyScene extends Container {
             else config.autoplay = false
 
             const game = ioc.resolve(GameScene)
-            swicher.switch(this, game).outEnd.add((remove) => {
+            swicher.switch(this, game).outEnd.add(remove => {
                 this.destroy({ children: true })
                 return remove()
             })
@@ -27,5 +26,3 @@ export class ReadyScene extends Container {
         this.addChild(layer)
     }
 }
-
-

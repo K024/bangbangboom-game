@@ -7,7 +7,6 @@ import { InfoSprite } from "../../Common/InfoObject/InfoSprite"
 import { Resources, GlobalEvents } from "../../Utils/SymbolClasses"
 import { InfoNumberSprite } from "../../Common/InfoObject/InfoNumberSprite"
 
-
 type UILayerInfo = {
     judge: SpriteInfo
     pause: SpriteInfo
@@ -45,8 +44,7 @@ export class UILayer extends Container {
         pause.interactive = true
         //        pause.buttonMode = true
         pause.on("pointertap", () => {
-            if (!state.paused)
-                state.on.pause.emit()
+            if (!state.paused) state.on.pause.emit()
         })
 
         score.setValue(0)
@@ -78,4 +76,3 @@ export class UILayer extends Container {
         })
     }
 }
-

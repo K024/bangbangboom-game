@@ -37,4 +37,3 @@ export class SlideAmongSprite extends Sprite {
         this.zIndex = p.scale
     }
 }
-

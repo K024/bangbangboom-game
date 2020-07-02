@@ -13,11 +13,11 @@ export class SoundManager {
             great: resources.great.data,
             good: resources.good.data,
             flick: resources.flick.data,
-            button: resources.button.data
+            button: resources.button.data,
         }
 
         for (const prop in sounds) {
-            sounds[(prop as keyof typeof sounds)].volume = config.effectVolume
+            sounds[prop as keyof typeof sounds].volume = config.effectVolume
         }
 
         const toStop = new Set<AudioInstance>()
@@ -47,7 +47,7 @@ export class SoundManager {
 
         state.on.pause.add(clear)
 
-        state.on.emptyTap.add((remove) => {
+        state.on.emptyTap.add(remove => {
             if (state.ended) return remove()
 
             play("button", 0)
@@ -56,5 +56,3 @@ export class SoundManager {
         events.End.add(clear)
     }
 }
-
-

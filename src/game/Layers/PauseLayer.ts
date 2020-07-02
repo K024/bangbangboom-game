@@ -8,7 +8,6 @@ import { InfoSprite } from "../Common/InfoObject/InfoSprite"
 import { FixRatioContainer } from "../Common/FixRatioContainer"
 import { LayerHeight, LayerWidth } from "../Core/Constants"
 
-
 type PauseLayerInfo = {
     continue: SpriteInfo
     restart: SpriteInfo
