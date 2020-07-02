@@ -1,4 +1,4 @@
-import { ratio } from "../../../core/Utils"
+import { ratio } from "../../Utils/Utils"
 
 function bezier(ctrl: [number, number, number, number]) {
     if (ctrl[0] < 0 || ctrl[0] > 1 || ctrl[2] < 0 || ctrl[2] > 1)

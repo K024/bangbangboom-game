@@ -3,7 +3,7 @@ import { GameState, PointerEventInfo } from "./GameState"
 import { Note, Slide, Flick, SlideAmong, SlideFlickEnd, SlideEnd, SlideStart } from "./GameMap"
 import { GameConfig } from "./GameConfig"
 import { JudgeOffset, Judge } from "./Constants"
-import { findex, assert } from "../../core/Utils"
+import { findex, assert } from "../Utils/Utils"
 
 export abstract class AbsctractJudgeManager {}
 

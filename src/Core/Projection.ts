@@ -1,5 +1,5 @@
 import { CenterX, FarLineZ, LaneInfY, LaneBottomY } from "./Constants"
-import { ratio } from "../../core/Utils"
+import { ratio } from "../Utils/Utils"
 
 /**
  * fall function

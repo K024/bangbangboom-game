@@ -6,7 +6,7 @@ import { LoadingLayer } from "../Layers/LoadingLayer"
 import { BackgroundLayer } from "../Layers/BackgroundLayer"
 import { ReadyScene } from "./ReadyScene"
 import { SceneSwitcher } from "./SceneSwitcher"
-import { RawMap } from "../../core/Map"
+import { RawMap } from "../Core/RawMap"
 import { AudioSource } from "../Common/AudioCtx"
 
 function howlerMiddleware(resource: LoaderResource, next: () => void) {

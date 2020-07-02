@@ -1,3 +1,3 @@
-export { Game } from "./game/Game"
-export { GameConfig, GameLoadConfig } from "./game/Core/GameConfig"
-export * as MapDefinitions from "./core/Map"
+export { Game } from "./Game"
+export { GameConfig, GameLoadConfig } from "./Core/GameConfig"
+export * as MapDefinitions from "./Core/RawMap"

@@ -1,4 +1,4 @@
-import { RawMap } from "../../core/Map"
+import { RawMap } from "./RawMap"
 
 export class GameConfig {
     judgeOffset = 0

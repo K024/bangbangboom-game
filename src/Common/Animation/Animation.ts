@@ -1,5 +1,4 @@
-import { ratio, createBinarySearch } from "../../../core/Utils"
-import { setByte } from "../../Utils/Utils"
+import { ratio, createBinarySearch, setByte } from "../../Utils/Utils"
 import { GameEvent } from "../GameEvent"
 import { DisplayObject, Sprite } from "pixi.js"
 import { CreateBezierCurve } from "./BezierCurve"

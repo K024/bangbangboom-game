@@ -1,7 +1,7 @@
 import { injectable } from "inversify"
 import { GameState } from "./GameState"
 import { Resources, GlobalEvents } from "../Utils/SymbolClasses"
-import { findex } from "../../core/Utils"
+import { findex } from "../Utils/Utils"
 import { GameConfig } from "./GameConfig"
 import { AudioSource, AudioInstance } from "../Common/AudioCtx"
 

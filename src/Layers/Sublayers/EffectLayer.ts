@@ -5,10 +5,9 @@ import { Resources, GlobalEvents } from "../../Utils/SymbolClasses"
 import { InfoEffect } from "../../Common/InfoObject/InfoEffect"
 import { GameState } from "../../Core/GameState"
 import { Slide } from "../../Core/GameMap"
-import { ratio, findex } from "../../../core/Utils"
+import { ratio, findex, ObjectPool } from "../../Utils/Utils"
 import { LaneCenterXs, LaneBottomY, LayerWidth, LayerHeight } from "../../Core/Constants"
 import { GameConfig } from "../../Core/GameConfig"
-import { ObjectPool } from "../../Utils/Utils"
 
 type EffectLayerInfo = {
     tap: EffectInfo

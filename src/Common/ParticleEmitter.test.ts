@@ -1,6 +1,6 @@
 import { ParticleOption, ParticleEmitter } from "./ParticleEmitter"
 import { Application } from "pixi.js"
-import { assert } from "../../core/Utils"
+import { assert } from "../Utils/Utils"
 
 const testoption: ParticleOption = {
     duration: 0.02,

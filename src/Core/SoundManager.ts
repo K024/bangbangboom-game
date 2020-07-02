@@ -3,7 +3,7 @@ import { Resources, GlobalEvents } from "../Utils/SymbolClasses"
 import { GameState } from "./GameState"
 import { GameConfig } from "./GameConfig"
 import { AudioSource, AudioInstance } from "../Common/AudioCtx"
-import { setItems } from "../../core/Utils"
+import { setItems } from "../Utils/Utils"
 
 @injectable()
 export class SoundManager {

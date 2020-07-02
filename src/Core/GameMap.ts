@@ -1,5 +1,5 @@
-import * as RawMap from "../../core/Map"
-import { findex } from "../../core/Utils"
+import * as RawMap from "./RawMap"
+import { findex } from "../Utils/Utils"
 import { Judge } from "./Constants"
 
 export type JudgePoint = {

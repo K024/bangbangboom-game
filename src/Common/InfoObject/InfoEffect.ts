@@ -2,7 +2,7 @@ import { Texture, Container } from "pixi.js"
 import { ParticleEmitter } from "../ParticleEmitter"
 import { InfoSprite } from "./InfoSprite"
 import { EffectInfo } from "./InfoType"
-import { assert } from "../../../core/Utils"
+import { assert } from "../../Utils/Utils"
 
 export class InfoEffect extends Container {
     constructor(info: EffectInfo, textures?: { [name: string]: Texture }) {
