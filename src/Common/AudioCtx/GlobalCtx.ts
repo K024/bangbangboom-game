@@ -27,4 +27,9 @@ class AudioCtx {
 window.AudioContext = window.AudioContext || (window as any).webkitAudioContext
 
 const globalctx = AudioContext && new AudioCtx()
+
+if (!globalctx) {
+    throw new Error("Web Audio Api is not supported.")
+}
+
 export default globalctx

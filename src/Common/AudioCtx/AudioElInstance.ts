@@ -3,8 +3,7 @@ import MyEvent from "./MyEvent"
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 export default class AudioElInstance {
-    constructor(source: Blob) {
-        this.source = source
+    constructor(src: string) {
         this.el = document.createElement("audio")
         this.el.oncanplaythrough = e => {
             this.el.oncanplaythrough = null
@@ -17,7 +16,7 @@ export default class AudioElInstance {
             this.onend.dispatch()
             this.el.currentTime = 0
         }
-        this.el.src = URL.createObjectURL(source)
+        this.el.src = src
         this.el.load()
     }
 
@@ -32,7 +31,6 @@ export default class AudioElInstance {
         return this.el.duration
     }
 
-    source: Blob
     private el: HTMLAudioElement
 
     get volume() {
@@ -54,22 +52,26 @@ export default class AudioElInstance {
     play(delay = 0) {
         this.el.play()
         this.onplay.dispatch()
+        return this
     }
 
     stop(delay = 0) {
         this.el.pause()
         this.el.currentTime = 0
         this.onend.dispatch()
+        return this
     }
 
     pause(delay = 0) {
         this.el.pause()
         this.onpause.dispatch()
+        return this
     }
 
     seek(position: number) {
         this.el.currentTime = position
         this.onseek.dispatch()
+        return this
     }
 
     get rate() {
@@ -79,5 +81,6 @@ export default class AudioElInstance {
     setRate(rate: number) {
         rate = Math.max(0.25, Math.min(4, rate))
         this.el.playbackRate = rate
+        return this
     }
 }

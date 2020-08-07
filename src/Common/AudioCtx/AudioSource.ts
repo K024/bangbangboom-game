@@ -1,10 +1,11 @@
 import globalctx from "./GlobalCtx"
-import MyEvent from "./MyEvent"
+import { AudioInstance } from "./index"
 
-type Source = ArrayBuffer | Blob | Promise<ArrayBuffer | Blob>
+type Source = string | ArrayBuffer | Blob | Promise<ArrayBuffer | Blob>
 
 export default class AudioSource {
-    private constructor() {
+    private constructor(buffer: AudioBuffer) {
+        this.buffer = buffer
         this.gain = globalctx.ctx.createGain()
         this.gain.connect(globalctx.destination)
     }
@@ -19,13 +20,7 @@ export default class AudioSource {
         this.gain.gain.value = v * v
     }
 
-    buffer?: AudioBuffer
-    get loaded() {
-        return !!this.buffer
-    }
-
-    onload = new MyEvent()
-    onloaderr = new MyEvent<[any]>()
+    buffer: AudioBuffer
 
     get duration() {
         if (this.buffer) {
@@ -34,46 +29,34 @@ export default class AudioSource {
         return 0
     }
 
+    createInstance() {
+        return new AudioInstance(this)
+    }
+
     static from(getsource: (() => Source) | Source) {
-        const s = new AudioSource()
-
-        const onerror = (err: any) => s.onloaderr.dispatch(err)
-
-        const load = (data: ArrayBuffer | Blob) => {
-            if (data instanceof Blob) {
-                const reader = new FileReader()
-                reader.onabort = onerror
-                reader.onerror = onerror
-                reader.onload = e => {
-                    if (reader.result instanceof ArrayBuffer) {
-                        load(reader.result)
-                    } else {
-                        onerror(e)
-                    }
+        return new Promise<AudioSource>((res, rej) => {
+            function load(data: ArrayBuffer | Blob) {
+                if (data instanceof Blob) {
+                    const reader = new FileReader()
+                    reader.onabort = rej
+                    reader.onerror = rej
+                    reader.onload = e => (reader.result instanceof ArrayBuffer ? load(reader.result) : rej(e))
+                    reader.readAsArrayBuffer(data)
+                } else {
+                    globalctx.ctx.decodeAudioData(data, buffer => res(new AudioSource(buffer)), rej)
                 }
-                reader.readAsArrayBuffer(data)
-            } else {
-                globalctx.ctx.decodeAudioData(
-                    data,
-                    buffer => {
-                        s.buffer = buffer
-                        s.onload.dispatch()
-                    },
-                    onerror
-                )
             }
-        }
-        s.load = () => {
             const src = getsource instanceof Function ? getsource() : getsource
-            if (src instanceof Promise) {
-                src.then(load).catch(onerror)
+            if (typeof src === "string") {
+                fetch(src)
+                    .then(x => x.arrayBuffer())
+                    .then(load)
+                    .catch(rej)
+            } else if (src instanceof Promise) {
+                src.then(load).catch(rej)
             } else {
                 load(src)
             }
-            return s
-        }
-        return s
+        })
     }
-
-    load = () => this
 }

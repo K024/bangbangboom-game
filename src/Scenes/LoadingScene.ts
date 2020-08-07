@@ -15,21 +15,17 @@ function howlerMiddleware(resource: LoaderResource, next: () => void) {
         return
     }
 
-    const audioSource = AudioSource.from(fetch(resource.url).then(res => res.blob()))
-
-    audioSource.onload.add(remove => {
-        resource.data = audioSource
-        resource.complete()
-        next()
-        remove()
-    })
-    audioSource.onloaderr.add((reomve, err) => {
-        resource.error = err
-        resource.abort("load error")
-        next()
-        reomve()
-    })
-    audioSource.load()
+    AudioSource.from(fetch(resource.url).then(res => res.blob()))
+        .then(audio => {
+            resource.data = audio
+            resource.complete()
+            next()
+        })
+        .catch(err => {
+            resource.error = err
+            resource.abort("load error")
+            next()
+        })
 }
 
 const mapContentLoadConfig = {

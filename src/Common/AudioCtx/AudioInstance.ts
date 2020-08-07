@@ -5,29 +5,32 @@ import MyEvent from "./MyEvent"
 export default class AudioInstance {
     constructor(source: AudioSource) {
         this.source = source
-        this.gain = globalctx.ctx.createGain()
-        this.gain.connect(source.destination)
+        this.output = globalctx.ctx.createGain()
+        this.output.connect(source.destination)
         this.node = this.createnode()
     }
     source: AudioSource
 
-    private gain: GainNode
+    private output: GainNode
     get volume() {
-        return Math.sqrt(this.gain.gain.value)
+        return Math.sqrt(this.output.gain.value)
     }
     set volume(v) {
-        this.gain.gain.value = v * v
+        this.output.gain.value = v * v
     }
 
     private node: AudioBufferSourceNode
     private createnode() {
         const n = globalctx.ctx.createBufferSource()
         n.buffer = this.source.buffer as AudioBuffer
-        n.connect(this.gain)
+        n.connect(this.output)
         n.playbackRate.value = this._playbackrate
         return n
     }
     private _playing = false
+    get playing() {
+        return this._playing
+    }
     /**
      * when sound is playing, keep it valid to (now - starttime) * playbackrate == position
      * when not playing, it's not valid at all
@@ -68,7 +71,6 @@ export default class AudioInstance {
         this._startpos = 0
         this._playing = false
         this.node = this.createnode()
-
         this.onend.dispatch()
     }
 
@@ -76,7 +78,6 @@ export default class AudioInstance {
         this._startpos = this.position // get before _playing is set to false
         this._playing = false
         this.node = this.createnode()
-
         this.onpause.dispatch()
     }
 
@@ -84,40 +85,35 @@ export default class AudioInstance {
         this.node = this.createnode()
         this.node.onended = this.handleNormalEnd
         this.callstart(0)
-
         this.onseek.dispatch()
     }
 
     play(delay = 0) {
-        if (this._playing) return
-
+        if (this._playing) return this
         this.callstart(delay)
-
         // normal end
         this.node.onended = this.handleNormalEnd
-
         this.onplay.dispatch()
+        return this
     }
 
     stop(delay = 0) {
         if (!this._playing) {
             this._startpos = 0
-            return
+            return this
         }
-
         // normal end, maybe we have to override pause end handler
         this.node.onended = this.handleNormalEnd
-
         this.node.stop(globalctx.now + delay)
+        return this
     }
 
     pause(delay = 0) {
-        if (!this._playing) return
-
+        if (!this._playing) return this
         // pause caused end
         this.node.onended = this.handlePauseEnd
-
         this.node.stop(globalctx.now + delay)
+        return this
     }
 
     seek(position: number) {
@@ -125,16 +121,15 @@ export default class AudioInstance {
         if (!this._playing) {
             this._startpos = position
             this.onseek.dispatch()
-            return
+            return this
         }
-
         this._startpos = position
         const playedtime = this._startpos / this._playbackrate
         this._starttime = globalctx.now - playedtime
         // seek caused end
         this.node.onended = this.handleSeekEnd
-
         this.node.stop(globalctx.now)
+        return this
     }
 
     get rate() {
@@ -143,16 +138,14 @@ export default class AudioInstance {
 
     setRate(rate: number) {
         rate = Math.max(0.25, Math.min(4, rate))
-
         const currentpos = this.position // get currentpos before set playbackrate
-
         this._playbackrate = rate
         this.node.playbackRate.value = this._playbackrate
-
         if (this._playing) {
             const now = globalctx.now
             const playedtime = currentpos / rate
             this._starttime = now - playedtime
         }
+        return this
     }
 }
