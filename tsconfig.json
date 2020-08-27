@@ -1,15 +1,14 @@
 {
     "compilerOptions": {
         "sourceMap": true,
-        "target": "es5",
-        "module": "es2015",
+        "target": "es2019",
+        "module": "none",
         "moduleResolution": "node",
         "lib": [
             "dom",
-            "es2018"
+            "esnext"
         ],
         "types": [
-            "howler",
             "inversify"
         ],
         "noImplicitAny": true,
@@ -17,12 +16,17 @@
         "emitDecoratorMetadata": true,
         "downlevelIteration": true,
         "strict": true,
-        "strictNullChecks": true
+        "strictNullChecks": true,
+        "esModuleInterop": true,
+
+        "outDir": "./build",
+        "declaration": true,
     },
     "include": [
-        "./**/*"
+        "./**/*.ts"
     ],
     "exclude": [
+        "build",
         "node_modules"
     ]
 }
