@@ -74,7 +74,7 @@ export const colorByte = {
     b: 0,
 }
 
-export class ObjectPool<T> {
+export class ObjectPool<T extends {} = {}> {
     private pool: T[] = []
 
     constructor(

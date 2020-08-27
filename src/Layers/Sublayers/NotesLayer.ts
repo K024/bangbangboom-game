@@ -105,13 +105,14 @@ class NoteLayer extends Container {
                 const type = (spritemap as any)[key]
                 const n = this.ioc.resolve(type) as noteSprite
                 this.addChild(n)
+                return n
             }
         }
     }
 
     private nextNoteIndex = 0
 
-    private pool: { [key: string]: ObjectPool<any> } = {}
+    private pool: { [key: string]: ObjectPool } = {}
 
     update(musicTime: number, showTime: number) {
         let index = this.nextNoteIndex
