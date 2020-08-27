@@ -17,6 +17,7 @@
         "downlevelIteration": true,
         "strict": true,
         "strictNullChecks": true,
+        "esModuleInterop": true,
 
         "outDir": "./build",
         "declaration": true,

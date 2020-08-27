@@ -20,6 +20,13 @@ export class Game {
     private readonly events = new GlobalEvents()
 
     constructor(canvas: HTMLCanvasElement, config: Optional<GameConfig>, loadConfig: Optional<GameLoadConfig>) {
+        if (!GameConfig.validate(config)) {
+            throw new Error("invalid GameConfig")
+        }
+        if (!GameLoadConfig.validate(loadConfig)) {
+            throw new Error("invalid GameLoadConfig")
+        }
+
         this.renderer = autoDetectRenderer({
             view: canvas,
             width: canvas.clientWidth,

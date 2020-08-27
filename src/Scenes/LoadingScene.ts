@@ -6,58 +6,55 @@ import { LoadingLayer } from "../Layers/LoadingLayer"
 import { BackgroundLayer } from "../Layers/BackgroundLayer"
 import { ReadyScene } from "./ReadyScene"
 import { SceneSwitcher } from "./SceneSwitcher"
-import { RawMap } from "../Core/RawMap"
+import { ValidateRawMap } from "../Core/RawMap"
 import { AudioSource } from "../Common/AudioCtx"
 
 function howlerMiddleware(resource: LoaderResource, next: () => void) {
     if (resource.loadType !== LoaderResource.LOAD_TYPE.AUDIO) {
-        next()
-        return
+        return next()
     }
-
     AudioSource.from(fetch(resource.url).then(res => res.blob()))
         .then(audio => {
             resource.data = audio
             resource.complete()
-            next()
         })
         .catch(err => {
             resource.error = err
             resource.abort("load error")
-            next()
         })
+        .finally(next)
 }
 
 const mapContentLoadConfig = {
-    load: () => null as null | Promise<RawMap> | RawMap,
+    load: null as GameLoadConfig["mapContent"],
     url: "object:///rawmap",
 }
 
-function mapContentMiddleWare(resource: LoaderResource, next: () => void) {
-    if (resource.url === mapContentLoadConfig.url) {
-        const res = mapContentLoadConfig.load()
+function validateMap(map: unknown) {
+    if (!ValidateRawMap(map)) {
+        console.error(ValidateRawMap.errors)
+        throw new Error("invalid raw map format")
+    }
+}
+
+async function mapContentMiddleWare(resource: LoaderResource, next: () => void) {
+    if (resource.url !== mapContentLoadConfig.url) {
+        return next()
+    }
+    try {
+        const res =
+            typeof mapContentLoadConfig.load === "function" ? mapContentLoadConfig.load() : mapContentLoadConfig.load
         if (!res) {
-            resource.error = new Error("Load error")
-            resource.abort("Load error")
-            next()
-        } else {
-            if (res instanceof Promise) {
-                res.then(map => {
-                    resource.data = map
-                    resource.complete()
-                    next()
-                }).catch(err => {
-                    resource.error = err
-                    resource.abort("Load error")
-                    next()
-                })
-            } else {
-                resource.data = res
-                resource.complete()
-                next()
-            }
+            throw new Error("Invalid load config")
         }
-    } else {
+        const map = await res
+        validateMap(map)
+        resource.data = map
+        resource.complete()
+    } catch (err) {
+        resource.error = err
+        resource.abort("Load error")
+    } finally {
         next()
     }
 }
