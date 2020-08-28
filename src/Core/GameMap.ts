@@ -1,6 +1,7 @@
 import * as RawMap from "./RawMap"
 import { findex } from "../Utils/Utils"
 import { Judge } from "./Constants"
+import { NoteBase } from "./RawMap"
 
 export type JudgePoint = {
     /** real time from music start */
@@ -77,12 +78,14 @@ export type GameMap = {
     combo: number
 }
 
+function comparator(a: NoteBase, b: NoteBase) {
+    const dt = a.time - b.time
+    if (dt) return dt
+    return a.lane - b.lane
+}
+
 export function fromRawMap(map: RawMap.RawMap): GameMap {
-    map.notes = map.notes.sort((a, b) => {
-        const dt = a.time - b.time
-        if (dt) return dt
-        return a.lane - b.lane
-    })
+    map.notes = map.notes.sort(comparator)
     const slideset = new Map<number, Slide>()
     const slidenotes = new Map<number, RawMap.NoteType[]>()
     for (const s of map.slides) {
@@ -136,6 +139,9 @@ export function fromRawMap(map: RawMap.RawMap): GameMap {
             timeMap.set(n.time, right)
         }
     }
+    notes.sort(comparator)
+    simlines.sort((a, b) => comparator(a.left, b.left))
+    bars.sort((a, b) => comparator(a.start, b.start))
 
     return { notes, bars, simlines, combo: notes.length }
 }
